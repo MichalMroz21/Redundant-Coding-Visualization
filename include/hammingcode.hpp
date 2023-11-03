@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QBitArray>
+#include <QDebug>
 
 class HammingCode : public QObject
 {

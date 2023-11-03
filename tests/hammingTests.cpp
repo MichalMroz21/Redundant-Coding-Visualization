@@ -4,36 +4,51 @@
 
 #include "hammingcode.hpp"
 
-TEST(Hamming, hammingInit){
 
-    QBitArray data = QBitArray::fromBits("1001", 4);
-
-    auto hammingCode = QSharedPointer<HammingCode>(new HammingCode(data));
-
-    ASSERT_EQ(data, hammingCode.data()->getData());
-    ASSERT_EQ(4, hammingCode.data()->getM());
-    ASSERT_EQ(3, hammingCode.data()->getP());
-}
-
+//testing the number of parity bits calculations and constructor
 TEST(Hamming, hammingInitParity){
 
-    QBitArray data(1900), data2(19229319);
+    QList<std::tuple<QString, int, int>> dataAndResult{{"1101", 3, 4}, {"10110100110", 4, 11}};
 
-    auto hammingCode = QSharedPointer<HammingCode>(new HammingCode(data)),
-         hammingCode2 = QSharedPointer<HammingCode>(new HammingCode(data2));
+    foreach(auto tuple, dataAndResult){
 
-    ASSERT_EQ(11, hammingCode.data()->getP());
-    ASSERT_EQ(25, hammingCode2.data()->getP());
+        QString data = std::get<0>(tuple);
+        int expectedP = std::get<1>(tuple), expectedM = std::get<2>(tuple);
+
+        QBitArray bits(data.size());
+
+        for(int i = 0; i < data.size(); i++) bits[i] = (data[i] == '1');
+
+        auto hammingCode = QSharedPointer<HammingCode>(new HammingCode(bits));
+
+        ASSERT_EQ(expectedP, hammingCode.data()->getP());
+        ASSERT_EQ(expectedM, hammingCode.data()->getM());
+    }
 }
 
+//hamming's encoding testing without additional parity bit
 TEST(Hamming, hammingEncoding){
 
-    QBitArray data = QBitArray::fromBits("1110", 4);
+    QList<QPair<QString, QString>> dataAndResult{{"1110", "0010110"}, {"11010101100111011111010110", "1111101001011001111011111010110"}};
 
-    auto hammingCode = QSharedPointer<HammingCode>(new HammingCode(data));
+    foreach(auto pair, dataAndResult){
 
-    hammingCode.data()->encodeData();
+        QString data = pair.first, expectedResult = pair.second, result{};
 
-    ASSERT_STREQ("0010110", hammingCode.data()->getData().bits());
+        QBitArray bits(data.size());
 
+        for(int i = 0; i < data.size(); i++) bits[i] = (data[i] == '1');
+
+        auto hammingCode = QSharedPointer<HammingCode>(new HammingCode(bits));
+
+        hammingCode.data()->encodeData();
+
+        QBitArray encoded = hammingCode.data()->getData();
+
+        for(int i = 0; i < encoded.size(); i++){
+            result.append(encoded.testBit(i) ? '1' : '0');
+        }
+
+        ASSERT_STREQ(result.toStdString().c_str(), expectedResult.toStdString().c_str()); //yup
+    }
 }
