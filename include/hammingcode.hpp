@@ -24,7 +24,7 @@ public:
 
 public slots:
     int calculateP();
-    void encodeData();
+    void encodeData(bool extended = false);
     bool isPowerTwo(int n);
     QBitArray getData();
     void setInitialData(QBitArray data);

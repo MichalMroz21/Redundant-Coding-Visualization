@@ -26,7 +26,7 @@ TEST(Hamming, hammingInitParity){
     }
 }
 
-//hamming's encoding testing without additional parity bit
+////hamming's encoding testing without additional parity bit
 TEST(Hamming, hammingEncoding){
 
     QList<QPair<QString, QString>> dataAndResult{{"1110", "0010110"}, {"11010101100111011111010110", "1111101001011001111011111010110"}};
@@ -42,6 +42,33 @@ TEST(Hamming, hammingEncoding){
         auto hammingCode = QSharedPointer<HammingCode>(new HammingCode(bits));
 
         hammingCode.data()->encodeData();
+
+        QBitArray encoded = hammingCode.data()->getData();
+
+        for(int i = 0; i < encoded.size(); i++){
+            result.append(encoded.testBit(i) ? '1' : '0');
+        }
+
+        ASSERT_STREQ(result.toStdString().c_str(), expectedResult.toStdString().c_str()); //yup
+    }
+}
+
+//hamming's encoding testing without additional parity bit
+TEST(Hamming, hammingEncodingExtended){
+
+    QList<QPair<QString, QString>> dataAndResult{{"1110", "10010110"}, {"11010101100111011111010110", "11111101001011001111011111010110"}};
+
+    foreach(auto pair, dataAndResult){
+
+        QString data = pair.first, expectedResult = pair.second, result{};
+
+        QBitArray bits(data.size());
+
+        for(int i = 0; i < data.size(); i++) bits[i] = (data[i] == '1');
+
+        auto hammingCode = QSharedPointer<HammingCode>(new HammingCode(bits));
+
+        hammingCode.data()->encodeData(true);
 
         QBitArray encoded = hammingCode.data()->getData();
 

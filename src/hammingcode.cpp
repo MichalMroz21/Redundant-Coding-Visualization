@@ -28,7 +28,7 @@ bool HammingCode::isPowerTwo(int n){
     return (n > 0) && ((n & (n - 1)) == 0);
 }
 
-void HammingCode::encodeData(){
+void HammingCode::encodeData(bool extended){
 
     int n = this->m + this->p, dataPtr{};
 
@@ -38,25 +38,34 @@ void HammingCode::encodeData(){
         if(!isPowerTwo(i + 1)) dataEncoded[i] = data[dataPtr++];
     }
 
+    int bit = 0;
+
     for(int i = 1; i <= n; i *= 2){
 
-        int xorRes = 0;
+        int cnt = 0;
 
-        for(int j = i - 1; j < n; j += i){
-            int cnt = i;
-
-            while(cnt--){
-                xorRes ^= dataEncoded[j];
-                j++;
+        for(int j = i + 1; j <= n; j++){
+            if(j & (1 << bit)){
+                cnt += dataEncoded[j - 1];
             }
         }
 
-        dataEncoded[i - 1] = xorRes;
+        dataEncoded[i - 1] = (cnt & 1);
+        bit++;
     }
 
-    data = dataEncoded;
-}
+    if(extended){
+        data = QBitArray(n + 1);
 
+        data[0] = (dataEncoded.count() & 1);
+
+        for (int i = 0; i < n; i++) {
+            data[i + 1] = dataEncoded[i];
+        }
+    }
+
+    else data = dataEncoded;
+}
 
 
 int HammingCode::getP() const
