@@ -1,12 +1,12 @@
-#include "debug_interceptor.hpp"
+#include "DebugInterceptor.hpp"
 #include "CMakeConfig.hpp"
 
-QSharedPointer<Debug_Interceptor> Debug_Interceptor::getInstance(){
-    static QSharedPointer<Debug_Interceptor> instance{new Debug_Interceptor(true, true, QString(ROOT_PATH) + "/Logs.txt")};
+QSharedPointer<DebugInterceptor> DebugInterceptor::getInstance(){
+    static QSharedPointer<DebugInterceptor> instance{new DebugInterceptor(true, true, QString(ROOT_PATH) + "/Logs.txt")};
     return instance;
 }
 
-Debug_Interceptor::Debug_Interceptor(bool displayToConsole, bool saveToFile, QString logsPath, QObject *parent) :
+DebugInterceptor::DebugInterceptor(bool displayToConsole, bool saveToFile, QString logsPath, QObject *parent) :
     QObject{parent}, displayToConsole(displayToConsole), saveToFile(saveToFile){
 
     logFile = QSharedPointer<QFile>(new QFile(logsPath));
@@ -19,7 +19,7 @@ Debug_Interceptor::Debug_Interceptor(bool displayToConsole, bool saveToFile, QSt
 
         out << QString("%1\n%2\n%1\n").arg(QString(execTitle.size(), '-'), execTitle);
 
-        qInstallMessageHandler(&Debug_Interceptor::myMessageOutputHandler);
+        qInstallMessageHandler(&DebugInterceptor::myMessageOutputHandler);
     }
 
     else{
@@ -27,24 +27,33 @@ Debug_Interceptor::Debug_Interceptor(bool displayToConsole, bool saveToFile, QSt
     }
 }
 
-Debug_Interceptor::~Debug_Interceptor(){
+DebugInterceptor::~DebugInterceptor(){
     if(logFile && logFile->isOpen()) logFile->close();
 }
 
-QString Debug_Interceptor::getCurrDate(){
+QString DebugInterceptor::getCurrDate(){
     QString currentDateStr { QDateTime::currentDateTime().toString(Qt::ISODate) };
     currentDateStr.replace('T', ' ');
     return currentDateStr;
 }
 
+void DebugInterceptor::disableDebug(){
+    this->enabled = false;
+}
 
-void Debug_Interceptor::myMessageOutputHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg) {
-    QSharedPointer<Debug_Interceptor>instance{ getInstance() };
+void DebugInterceptor::enableDebug(){
+    this->enabled = true;
+}
+
+void DebugInterceptor::myMessageOutputHandler(QtMsgType type, const QMessageLogContext &context, const QString &msg) {
+    QSharedPointer<DebugInterceptor>instance{ getInstance() };
     if (instance) instance->myMessageOutput(type, context, msg);
 }
 
-void Debug_Interceptor::myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
+void DebugInterceptor::myMessageOutput(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
+    if(this->enabled == false) return;
+
     QString msgType{}, contextFile = context.file;
 
     contextFile = contextFile.right(contextFile.length() - contextFile.lastIndexOf('/') - 1);
@@ -58,21 +67,21 @@ void Debug_Interceptor::myMessageOutput(QtMsgType type, const QMessageLogContext
     QTextStream toLogFile(logFile.data());
 
     switch(type) {
-    case QtDebugMsg:
-        msgType = "Debug";
-        break;
-    case QtInfoMsg:
-        msgType = "Info";
-        break;
-    case QtWarningMsg:
-        msgType = "Warning";
-        break;
-    case QtCriticalMsg:
-        msgType = "Critical";
-        break;
-    case QtFatalMsg:
-        msgType = "Fatal";
-        break;
+        case QtDebugMsg:
+            msgType = "Debug";
+            break;
+        case QtInfoMsg:
+            msgType = "Info";
+            break;
+        case QtWarningMsg:
+            msgType = "Warning";
+            break;
+        case QtCriticalMsg:
+            msgType = "Critical";
+            break;
+        case QtFatalMsg:
+            msgType = "Fatal";
+            break;
     }
 
     if(saveToFile){
@@ -84,3 +93,4 @@ void Debug_Interceptor::myMessageOutput(QtMsgType type, const QMessageLogContext
     }
 
 }
+

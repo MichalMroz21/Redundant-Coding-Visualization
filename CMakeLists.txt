@@ -20,6 +20,8 @@ project(RedundantCoding VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+find_package(GTest REQUIRED)
+
 find_package(Qt6 6.4 REQUIRED COMPONENTS Quick Concurrent)
 
 qt_standard_project_setup()
@@ -31,6 +33,7 @@ add_subdirectory(src)
 add_subdirectory(include)
 add_subdirectory(src_gui)
 add_subdirectory(assets)
+add_subdirectory(tests)
 
 qt_add_qml_module(appRedundantCoding
     URI RedundantCoding
@@ -59,6 +62,7 @@ set_target_properties(appRedundantCoding PROPERTIES
 target_link_libraries(appRedundantCoding
     PRIVATE Qt6::Quick
     PRIVATE Qt${QT_VERSION_MAJOR}::Concurrent
+    PRIVATE ${GTEST_LIBRARIES}
 )
 
 install(TARGETS appRedundantCoding
