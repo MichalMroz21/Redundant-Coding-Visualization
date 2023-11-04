@@ -16,10 +16,10 @@ Window {
             width: root.width / 4
             height: root.height
 
-            Layout.alignment: Qt.AlignCenter
+
 
             ColumnLayout{
-
+                Layout.alignment: Qt.AlignCenter
                 spacing: 10
 
                 Text {
@@ -45,11 +45,18 @@ Window {
                 Button {
                     id: confirmButton
                     text: qsTr("Zatwierdź")
+                    onClicked: {
+                        switchPage(slider.value);
+                    }
                 }
 
                 Button {
                     id: exitButton
                     text: qsTr("Wyjście")
+                    Connections {
+                        target: exitButton
+                        onClicked: Qt.quit()
+                    }
                 }
 
             }
@@ -81,4 +88,21 @@ Window {
 
         }
     }
+    StackView{
+           id: stackView
+           anchors.fill: parent
+    }
+    function switchPage(index) {
+
+            var pageSelected;
+
+            switch (index) {
+                case 0: pageSelected = "Hamming.qml"; break;
+                //case 1: pageSelected = "1.qml"; break;
+                //case 2: pageSelected = "2.qml"; break;
+            }
+
+            stackView.push(pageSelected);
+        }
+
 }
