@@ -1,4 +1,3 @@
-import QtQuick
 import QtQuick.Window
 import QtQuick.Controls
 import QtQuick.Layouts 6.3
@@ -10,54 +9,56 @@ Window {
     visible: true
     title: qsTr("Redundant Coding")
 
-    RowLayout{
-
-        Layout.alignment: Qt.AlignVCenter
+    Row{
 
         ColumnLayout{
 
-            Layout.margins: root.width / 8
-            Layout.alignment: Qt.AlignVCenter
+            width: root.width / 4
+            height: root.height
 
-            Text {
-                id: selectedAlgorithmText
-                text: "Wybrany algorytm:"
-                font.pixelSize: 16
-                wrapMode: Text.WordWrap
-            }
+            Layout.alignment: Qt.AlignCenter
 
+            ColumnLayout{
 
-            Text {
-                id: algorithmText
-                text: qsTr("Hamming")
-                font.pixelSize: 20
-                topPadding: 0
-            }
+                spacing: 10
 
-            Slider {
-                id: slider
-                snapMode: RangeSlider.SnapOnRelease
-                stepSize: 1
-                to: 2
-                value: 0
-            }
+                Text {
+                    id: selectedAlgorithmText
+                    text: "Wybrany algorytm:"
+                    font.pixelSize: 16
+                }
 
-            Button {
-                id: confirmButton
-                text: qsTr("Zatwierdź")
-            }
+                Text {
+                    id: algorithmText
+                    text: qsTr("Hamming")
+                    font.pixelSize: 20
+                }
 
+                Slider {
+                    id: slider
+                    snapMode: RangeSlider.SnapOnRelease
+                    stepSize: 1
+                    to: 2
+                    value: 0
+                }
 
-            Button {
-                id: exitButton
-                text: qsTr("Wyjście")
+                Button {
+                    id: confirmButton
+                    text: qsTr("Zatwierdź")
+                }
+
+                Button {
+                    id: exitButton
+                    text: qsTr("Wyjście")
+                }
+
             }
 
         }
 
         ColumnLayout{
 
-            Layout.alignment: Qt.AlignVCenter
+            height: root.height
 
             Image {
                 id: image
@@ -75,10 +76,6 @@ Window {
                 font.pixelSize: 24
 
                 wrapMode: Text.WrapAnywhere
-
-                onContentSizeChanged: {
-                   parent.height = contentHeight
-                }
             }
 
 
