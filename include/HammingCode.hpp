@@ -39,7 +39,7 @@ signals:
 
 private:
 
-    QBitArray data{}, receivedCode;
+    QBitArray data{}, receivedCode{};
     int p{}, m{};
     bool encodingExtended = false;
 
