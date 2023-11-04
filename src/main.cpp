@@ -1,9 +1,10 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QLoggingCategory>
 
 #include "CMakeConfig.hpp"
-#include "debug_interceptor.hpp"
+#include "DebugInterceptor.hpp"
 
 #include <gtest/gtest.h>
 
@@ -11,11 +12,17 @@ int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
-    auto debugInterceptor = Debug_Interceptor::getInstance();
+    auto debugInterceptor = DebugInterceptor::getInstance();
 
     testing::InitGoogleTest(&argc, argv);
 
-    if(RUN_ALL_TESTS() != 0){
+    debugInterceptor.data()->disableDebug();
+
+    bool testsResult = RUN_ALL_TESTS();
+
+    debugInterceptor.data()->enableDebug();
+
+    if(testsResult != 0){
         qWarning() << "Not all tests passed!";
     }
 
