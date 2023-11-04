@@ -1,6 +1,7 @@
 import QtQuick.Window
 import QtQuick.Controls
 import QtQuick.Layouts 6.3
+import QtQuick
 
 Window {
     id: root
@@ -40,6 +41,9 @@ Window {
                     stepSize: 1
                     to: 2
                     value: 0
+                    onMoved: {
+                        switchContent(slider.value);
+                    }
                 }
 
                 Button {
@@ -55,7 +59,7 @@ Window {
                     text: qsTr("Wyjście")
                     Connections {
                         target: exitButton
-                        onClicked: Qt.quit()
+                        function onClicked(){ Qt.quit();}
                     }
                 }
 
@@ -66,6 +70,7 @@ Window {
         ColumnLayout{
 
             height: root.height
+            width: root.width / 4 * 3
 
             Image {
                 id: image
@@ -73,6 +78,7 @@ Window {
                 height: 300
                 source: "../assets/test.png"
                 fillMode: Image.PreserveAspectFit
+                Layout.alignment: Qt.AlignCenter
             }
 
             Text {
@@ -82,7 +88,9 @@ Window {
                 text: qsTr("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
                 font.pixelSize: 24
 
-                wrapMode: Text.WrapAnywhere
+                wrapMode: Text.Wrap
+                padding: 10
+                Layout.preferredWidth: parent.width
             }
 
 
@@ -103,6 +111,33 @@ Window {
             }
 
             stackView.push(pageSelected);
+    }
+
+    function switchContent(index) {
+        var imageSelected, descriptionSelected, algorithmSelected
+        switch (index) {
+            case 0: {
+                descriptionSelected = "Opis Hamminga";
+                imageSelected = "../assets/Hamming.png";
+                algorithmSelected = "Hamming";
+                break;
+            }
+            case 1: {
+                descriptionSelected = "Opis pierwszy";
+                imageSelected = "../assets/Hamming.png";
+                algorithmSelected = "Pierwszy";
+                break;
+            }
+            case 2:{
+                descriptionSelected = "Opis drugi";
+                imageSelected = "../assets/Hamming.png";
+                algorithmSelected = "Drugi";
+                break;
+            }
         }
+        descriptionText.text = descriptionSelected;
+        image.source = imageSelected;
+        algorithmText.text = algorithmSelected;
+    }
 
 }
