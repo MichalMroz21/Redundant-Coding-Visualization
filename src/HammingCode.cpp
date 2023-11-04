@@ -1,15 +1,29 @@
 #include "HammingCode.hpp"
+
 #include <climits>
+#include <QtConcurrent>
 
-HammingCode::HammingCode(QBitArray data, QObject *parent) : QObject{parent}
-{
-    setInitialData(data);
-}
+HammingCode::HammingCode(QObject *parent) : QObject{parent}{}
 
-void HammingCode::setInitialData(QBitArray data){
+void HammingCode::setInitialData(QBitArray data, bool extend){
     this->data = data;
     this->m = data.size();
     this->p = calculateP();
+    this->animationDelayMs = 1000;
+    this->encodingExtended = extend;
+}
+
+void HammingCode::setInitialData(QString data, bool extend)
+{
+    int n = data.size();
+
+    QBitArray bits(n);
+
+    for(int i = 0; i < n; i++){
+        bits[i] = (data[i].toLatin1() - '0');
+    }
+
+    setInitialData(bits, extend);
 }
 
 //Simulate sending some code, it can have 1 bit error
@@ -117,7 +131,21 @@ bool HammingCode::isPowerTwo(int n){
     return (n > 0) && ((n & (n - 1)) == 0); //O(1) trick
 }
 
-void HammingCode::encodeData(bool extend){
+
+void HammingCode::encodeData(bool forQML){
+
+    if(forQML){
+        static_cast<void>(QtConcurrent::run([=](){
+            encodeDataAsync(forQML);
+        }));
+    }
+
+    else{
+        encodeDataAsync(forQML);
+    }
+}
+
+void HammingCode::encodeDataAsync(bool forQML){
 
     int n = this->m + this->p, dataPtr{};
 
@@ -144,10 +172,9 @@ void HammingCode::encodeData(bool extend){
     }
 
     //putting dataEncoded into data
-    if(extend){
+    if(this->encodingExtended){
 
         this->p++; //increase parity count if extended
-        this->encodingExtended = true;
 
         data = QBitArray(n + 1);
 
@@ -163,6 +190,18 @@ void HammingCode::encodeData(bool extend){
     else data = dataEncoded; //just copy the rest without extending the bit
 }
 
+QString HammingCode::getDataStr()
+{
+    QString ret{};
+
+    int n = this->m;
+
+    for(int i = 0; i < n; i++){
+        ret.append(QChar(this->data[i] + '0'));
+    }
+
+    return ret;
+}
 
 int HammingCode::getP() const{
     return p;

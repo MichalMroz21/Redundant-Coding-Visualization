@@ -11,7 +11,7 @@ class HammingCode : public QObject
 
 public:
 
-    explicit HammingCode(QBitArray data, QObject *parent = nullptr);
+    explicit HammingCode(QObject *parent = nullptr);
 
     void setP(int newP), setM(int newM), setReceivedCode(const QBitArray& newReceivedCode);
 
@@ -28,11 +28,16 @@ public slots:
     int correctErrorExtended();
     int correctErrorStandard();
 
-    void encodeData(bool extend = false);
-    void setInitialData(QBitArray data);
+    void encodeDataAsync(bool forQML);
+    void encodeData(bool forQML);
+
+    void setInitialData(QBitArray data, bool extend);
+    void setInitialData(QString data, bool extend);
+
     void sendCode(QBitArray send);
 
     QBitArray getData();
+    QString getDataStr();
 
 signals:
 
@@ -40,7 +45,7 @@ signals:
 private:
 
     QBitArray data{}, receivedCode{};
-    int p{}, m{};
+    int p{}, m{}, animationDelayMs{};
     bool encodingExtended = false;
 
 };

@@ -25,7 +25,8 @@ TEST(Hamming, hammingInitParity){
 
         for(int i = 0; i < data.size(); i++) bits[i] = (data[i] == '1');
 
-        auto hammingCode = QSharedPointer<HammingCode>(new HammingCode(bits));
+        auto hammingCode = QSharedPointer<HammingCode>(new HammingCode());
+        hammingCode.data()->setInitialData(bits, false);
 
         ASSERT_EQ(expectedP, hammingCode.data()->getP());
         ASSERT_EQ(expectedM, hammingCode.data()->getM());
@@ -50,9 +51,10 @@ TEST(Hamming, hammingEncoding){
 
         for(int i = 0; i < data.size(); i++) bits[i] = (data[i] == '1');
 
-        auto hammingCode = QSharedPointer<HammingCode>(new HammingCode(bits));
+        auto hammingCode = QSharedPointer<HammingCode>(new HammingCode());
+        hammingCode.data()->setInitialData(bits, false);
 
-        hammingCode.data()->encodeData();
+        hammingCode.data()->encodeData(false);
 
         QBitArray encoded = hammingCode.data()->getData();
 
@@ -85,9 +87,10 @@ TEST(Hamming, hammingEncodingExtended){
 
         for(int i = 0; i < data.size(); i++) bits[i] = (data[i] == '1');
 
-        auto hammingCode = QSharedPointer<HammingCode>(new HammingCode(bits));
+        auto hammingCode = QSharedPointer<HammingCode>(new HammingCode());
+        hammingCode.data()->setInitialData(bits, true);
 
-        hammingCode.data()->encodeData(true);
+        hammingCode.data()->encodeData(false);
 
         QBitArray encoded = hammingCode.data()->getData();
 
@@ -120,9 +123,10 @@ TEST(Hamming, hammingErrorCorrection){
         for(int i = 0; i < data.size(); i++) bits[i] = (data[i] == '1');
         for(int i = 0; i < sendStr.size(); i++) toBeSent[i] = (sendStr[i] == '1');
 
-        auto hammingCode = QSharedPointer<HammingCode>(new HammingCode(bits));
+        auto hammingCode = QSharedPointer<HammingCode>(new HammingCode());
+        hammingCode.data()->setInitialData(bits, false);
 
-        hammingCode.data()->encodeData();
+        hammingCode.data()->encodeData(false);
         hammingCode->sendCode(toBeSent);
 
         int errorPos = hammingCode.data()->correctError();
@@ -154,9 +158,10 @@ TEST(Hamming, hammingErrorCorrectionExtended){
         for(int i = 0; i < data.size(); i++) bits[i] = (data[i] == '1');
         for(int i = 0; i < sendStr.size(); i++) toBeSent[i] = (sendStr[i] == '1');
 
-        auto hammingCode = QSharedPointer<HammingCode>(new HammingCode(bits));
+        auto hammingCode = QSharedPointer<HammingCode>(new HammingCode());
+        hammingCode.data()->setInitialData(bits, true);
 
-        hammingCode.data()->encodeData(true);
+        hammingCode.data()->encodeData(false);
         hammingCode->sendCode(toBeSent);
 
         int errorPos = hammingCode.data()->correctError();

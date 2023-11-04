@@ -4,15 +4,25 @@ import QtQuick.Layouts 6.3
 import QtQuick
 
 Window {
+
     id: root
     width: 1280
     height: 720
     visible: true
     title: qsTr("Redundant Coding")
 
+    RotationAnimator {
+        id: rotationAnimator
+        from: 0;
+        to: 360;
+        duration: 1000
+        loops: Animation.Infinite
+    }
+
     Row{
 
         ColumnLayout{
+
             width: root.width / 4
             height: root.height
 
@@ -47,6 +57,7 @@ Window {
                 Button {
                     id: confirmButton
                     text: qsTr("Zatwierdź")
+
                     onClicked: {
                         switchPage(slider.value);
                     }
@@ -62,11 +73,39 @@ Window {
                     }
                 }
 
+                Image {
+                    Layout.preferredWidth: parent.width / 5
+                    Layout.preferredHeight: Layout.preferredWidth
+
+                    id: options
+
+                    source: "../assets/options.png"
+                    fillMode: Image.PreserveAspectFit
+
+                    MouseArea{
+                        anchors.fill: parent
+                        hoverEnabled: true
+
+                        onEntered:{
+                            rotationAnimator.target = parent;
+                            rotationAnimator.running = true;
+                        }
+
+                        onExited:{
+                            rotationAnimator.running = false;
+                        }
+
+                        onClicked:{
+                            stackView.push("Options.qml");
+                        }
+                    }
+                }
             }
 
         }
 
         ColumnLayout{
+
             height: root.height
             width: root.width / 4 * 3
 
@@ -75,13 +114,12 @@ Window {
 
                 Layout.alignment: Qt.AlignCenter
                 source: "../assets/Hamming.png"
-                fillMode: Image.PreserveAspectFit             
+                fillMode: Image.PreserveAspectFit
             }
 
             Rectangle {
 
                 Layout.alignment: Qt.AlignCenter
-
                 width: parent.width
                 height: parent.height
 
@@ -93,8 +131,7 @@ Window {
 
                     wrapMode: Text.WordWrap
 
-                    height: parent.height //without this it won't wrap LOL
-                    width: parent.width
+                    width: parent.width //without this it won't wrap LOL
 
                     padding: 10
                 }
@@ -113,7 +150,7 @@ Window {
         var pageSelected;
 
         switch (index) {
-            case 0: pageSelected = "Hamming.qml"; break;
+            case 0: pageSelected = "inputHamming.qml"; break;
         }
 
         stackView.push(pageSelected);
