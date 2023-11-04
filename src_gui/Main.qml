@@ -13,13 +13,11 @@ Window {
     Row{
 
         ColumnLayout{
-
             width: root.width / 4
             height: root.height
 
-
-
             ColumnLayout{
+
                 Layout.alignment: Qt.AlignCenter
                 spacing: 10
 
@@ -57,9 +55,10 @@ Window {
                 Button {
                     id: exitButton
                     text: qsTr("Wyjście")
+
                     Connections {
                         target: exitButton
-                        function onClicked(){ Qt.quit();}
+                        function onClicked(){ Qt.quit(); }
                     }
                 }
 
@@ -68,76 +67,81 @@ Window {
         }
 
         ColumnLayout{
-
             height: root.height
             width: root.width / 4 * 3
 
             Image {
                 id: image
-                width: 300
-                height: 300
-                source: "../assets/test.png"
-                fillMode: Image.PreserveAspectFit
+
                 Layout.alignment: Qt.AlignCenter
+                source: "../assets/Hamming.png"
+                fillMode: Image.PreserveAspectFit             
             }
 
-            Text {
-                id: descriptionText
-                width: 300
-                height: 300
-                text: qsTr("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
-                font.pixelSize: 24
+            Rectangle {
 
-                wrapMode: Text.Wrap
-                padding: 10
-                Layout.preferredWidth: parent.width
+                Layout.alignment: Qt.AlignCenter
+
+                width: parent.width
+                height: parent.height
+
+                Text {
+                    id: descriptionText
+
+                    text: qsTr("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
+                    font.pixelSize: 24
+
+                    wrapMode: Text.WordWrap
+
+                    height: parent.height //without this it won't wrap LOL
+                    width: parent.width
+
+                    padding: 10
+                }
             }
-
 
         }
     }
+
     StackView{
-           id: stackView
-           anchors.fill: parent
+       id: stackView
+       anchors.fill: parent
     }
+
     function switchPage(index) {
 
-            var pageSelected;
+        var pageSelected;
 
-            switch (index) {
-                case 0: pageSelected = "Hamming.qml"; break;
-                //case 1: pageSelected = "1.qml"; break;
-                //case 2: pageSelected = "2.qml"; break;
-            }
+        switch (index) {
+            case 0: pageSelected = "Hamming.qml"; break;
+        }
 
-            stackView.push(pageSelected);
+        stackView.push(pageSelected);
     }
 
     function switchContent(index) {
-        var imageSelected, descriptionSelected, algorithmSelected
+
+        var imgDescAlgo = []
+
         switch (index) {
+
             case 0: {
-                descriptionSelected = "Opis Hamminga";
-                imageSelected = "../assets/Hamming.png";
-                algorithmSelected = "Hamming";
+                imgDescAlgo = ["Opis Hamminga", "../assets/Hamming.png", "Hamming"];
                 break;
             }
             case 1: {
-                descriptionSelected = "Opis pierwszy";
-                imageSelected = "../assets/Hamming.png";
-                algorithmSelected = "Pierwszy";
+                imgDescAlgo = ["Opis drugiego", "../assets/Hamming.png", "Drugi"];
                 break;
             }
             case 2:{
-                descriptionSelected = "Opis drugi";
-                imageSelected = "../assets/Hamming.png";
-                algorithmSelected = "Drugi";
+                imgDescAlgo = ["Opis trzeciego", "../assets/Hamming.png", "Trzeci"];
                 break;
             }
         }
-        descriptionText.text = descriptionSelected;
-        image.source = imageSelected;
-        algorithmText.text = algorithmSelected;
+
+        descriptionText.text = imgDescAlgo[0];
+        image.source = imgDescAlgo[1];
+        algorithmText.text = imgDescAlgo[2];
     }
 
 }
