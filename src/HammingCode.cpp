@@ -2,6 +2,8 @@
 
 #include <climits>
 #include <QtConcurrent>
+#include <QThread>
+#include <thread>
 
 HammingCode::HammingCode(QObject *parent) : QObject{parent}{}
 
@@ -149,6 +151,9 @@ void HammingCode::encodeData(bool forQML){
 void HammingCode::encodeDataAsync(bool forQML){
 
     int n = this->m + this->p, dataPtr{};
+
+    std::chrono::milliseconds dura( 2000 );
+    std::this_thread::sleep_for(dura);
 
     QBitArray dataEncoded(n);
 

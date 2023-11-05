@@ -8,6 +8,7 @@
 #include "HammingCode.hpp"
 
 #include <gtest/gtest.h>
+#include <thread>
 
 int main(int argc, char *argv[])
 {

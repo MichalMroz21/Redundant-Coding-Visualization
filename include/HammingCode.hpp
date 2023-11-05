@@ -42,8 +42,8 @@ public slots:
 //QML Hamming.qml visualization API
 signals:
 
-    void turnBitOn(int index);
-    void turnBitOff(int index);
+    void turnBitOn(int arrIndex, int index);
+    void turnBitOff(int arrIndex, int index);
 
     void pushEmptyArray(int size);
     void pushArray(QString str);
@@ -51,6 +51,8 @@ signals:
     void popArray();
     void deleteArrayAtIndex(int index);
 
+    void setBit(int arrIndex, int index, QString bit);
+    void negateBit(int arrIndex, int index);
 
 private:
 

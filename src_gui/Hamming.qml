@@ -18,7 +18,6 @@ Page {
         anchors.horizontalCenter: parent.horizontalCenter
         topPadding: root.height / 4
         font.pixelSize: 26
-        text: ""
         color: "black"
     }
 
@@ -31,13 +30,10 @@ Page {
         spacing: 0
 
         ColumnLayout{
+            id: visualizeBase
 
             Layout.alignment: Qt.AlignCenter
             spacing: 10
-
-            id: visualizeBase
-
-
         }
     }
 
@@ -46,11 +42,6 @@ Page {
         target: hammingCode
 
         property var arrays : []
-
-        Component.onCompleted: {
-            stageText.text = "Encoding";
-            hammingCode.encodeData(true);
-        }
 
         function onPushArray(str){
             var component = Qt.createComponent("VisualizeComponents/ArrayRowLayout.qml");
@@ -63,22 +54,42 @@ Page {
         }
 
         function onPopArray(){
-            arrays[arrays.length - 1].destroy();
+            if(arrays.length > 0){
+                arrays[arrays.length - 1].destroy();
+            }
         }
 
         function onDeleteArrayAtIndex(index){
-            arrays[index].destroy();
+            if(arrays.length > index){
+                arrays[index].destroy();
+            }
         }
 
-        function onTurnBitOff(index){
-
+        function onSetBit(arrIndex, index, bit){
+            arrays[arrIndex].array[index].children[0].text = bit
         }
 
-        function onTurnBitOn(index){
+        function onNegateBit(arrIndex, index){
+            var bit = arrays[arrIndex].array[index].children[0].text;
 
+            if(bit === "0") bit = "1";
+            else bit = "0";
+
+            arrays[arrIndex].array[index].children[0].text = bit;
         }
 
-        //put signals from c++ here that change visual stuff and shit
+        function onTurnBitOff(arrIndex, index){
+            arrays[arrIndex].array[index].color = "white";
+        }
+
+        function onTurnBitOn(arrIndex, index){
+            arrays[arrIndex].array[index].color = "red";
+        }
+
+        Component.onCompleted: {
+            stageText.text = "Encoding";
+            hammingCode.encodeData(true);
+        }
     }
 
 }

@@ -8,6 +8,7 @@ RowLayout{
     spacing: 0
 
     property int model: 0; //replace this value in create method
+    property var array : children
 
     Repeater {
 

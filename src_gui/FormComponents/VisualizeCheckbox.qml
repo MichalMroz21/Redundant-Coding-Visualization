@@ -4,8 +4,6 @@ import QtQuick.Controls 2.12
 
 CheckBox{
 
-
-
     indicator: Rectangle {
         implicitWidth: 20
         implicitHeight: 20

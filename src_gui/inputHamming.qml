@@ -86,8 +86,11 @@ Page {
                 text: qsTr("Wizualizuj")
 
                 onClicked:{
-                    hammingCode.setInitialData(hammingData.text, additionalBit.state);
-                    stackView.push("Hamming.qml");
+
+                    if(hammingData.text.length > 0){
+                        hammingCode.setInitialData(hammingData.text, additionalBit.state);
+                        stackView.push("Hamming.qml");
+                    }
                 }
             }
 
