@@ -40,6 +40,7 @@ public slots:
     QString getDataStr();
 
     int getAnimationDelayMs() const;
+    void setAnimationDelayMs(int delay);
 
 //QML Hamming.qml visualization API
 signals:

@@ -21,6 +21,17 @@ Page {
         color: "black"
     }
 
+    Slider {
+        id: delayTime
+        snapMode: RangeSlider.NoSnap
+        stepSize: 100
+        to: 10000
+        value: 1000
+        onMoved: {
+            hammingCode.setAnimationDelayMs(value);
+        }
+    }
+
     ColumnLayout {
 
         width: parent.width
