@@ -37,11 +37,22 @@ Page {
         }
     }
 
+    Timer {
+       id: timer
+    }
+
     Connections{
 
         target: hammingCode
 
         property var arrays : []
+
+        function delay(delayTime,cb) {
+            timer.interval = delayTime;
+            timer.repeat = false;
+            timer.triggered.connect(cb);
+            timer.start();
+        }
 
         function onPushArray(str){
             var component = Qt.createComponent("VisualizeComponents/ArrayRowLayout.qml");
@@ -82,8 +93,13 @@ Page {
             arrays[arrIndex].array[index].color = "white";
         }
 
-        function onTurnBitOn(arrIndex, index){
-            arrays[arrIndex].array[index].color = "red";
+        function onTurnBitOn(arrIndex, index, color){
+            if(color === "") color = "red";
+            arrays[arrIndex].array[index].color = color;
+
+            delay(0.995 * hammingCode.getAnimationDelayMs(), function(){
+               onTurnBitOff(arrIndex, index);
+            });
         }
 
         Component.onCompleted: {

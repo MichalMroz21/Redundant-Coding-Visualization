@@ -116,6 +116,8 @@ int HammingCode::correctError()
 {
     if(this->encodingExtended) return correctErrorExtended();
     else return correctErrorStandard();
+
+
 }
 
 int HammingCode::calculateP(){
@@ -128,6 +130,7 @@ int HammingCode::calculateP(){
     }
 
     return newP;
+
 }
 
 bool HammingCode::isPowerTwo(int n){
@@ -152,18 +155,45 @@ void HammingCode::encodeDataAsync(bool forQML){
 
     int n = this->m + this->p, dataPtr{};
 
-    std::chrono::milliseconds dura( 2000 );
-    std::this_thread::sleep_for(dura);
-
     QBitArray dataEncoded(n);
 
     if(forQML){
+        QThread::currentThread()->msleep(this->animationDelayMs);
         emit pushArray(this->getDataStr());
+
+        QThread::currentThread()->msleep(this->animationDelayMs);
         emit pushEmptyArray(n);
     }
 
     for(int i = 0; i < n; i++){
-        if(!isPowerTwo(i + 1)) dataEncoded[i] = data[dataPtr++]; //copying non-parity bits
+
+        bool isParity = isPowerTwo(i + 1),
+              dataBit = data[dataPtr];
+
+        if(!isParity) dataEncoded[i] = data[dataPtr]; //copying non-parity bits
+
+        if(forQML){
+            emit turnBitOn(0, dataPtr, "blue");
+
+            if(!isParity) {
+                emit turnBitOn(1, i, "green");
+                emit setBit(1, i, dataBit ? "1" : "0");
+            }
+
+            else {
+                emit turnBitOn(1, i, "red");
+                emit setBit(1, i, "0");
+            }
+
+            QThread::currentThread()->msleep(this->animationDelayMs);
+        }
+
+        if(!isParity) dataPtr++;
+    }
+
+    if(forQML){
+        emit deleteArrayAtIndex(0);
+        QThread::currentThread()->msleep(this->animationDelayMs);
     }
 
     int bit = 0;
@@ -212,6 +242,11 @@ QString HammingCode::getDataStr()
     }
 
     return ret;
+}
+
+int HammingCode::getAnimationDelayMs() const
+{
+    return animationDelayMs;
 }
 
 int HammingCode::getP() const{

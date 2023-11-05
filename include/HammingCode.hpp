@@ -39,10 +39,12 @@ public slots:
     QBitArray getData();
     QString getDataStr();
 
+    int getAnimationDelayMs() const;
+
 //QML Hamming.qml visualization API
 signals:
 
-    void turnBitOn(int arrIndex, int index);
+    void turnBitOn(int arrIndex, int index, QString color = "");
     void turnBitOff(int arrIndex, int index);
 
     void pushEmptyArray(int size);
