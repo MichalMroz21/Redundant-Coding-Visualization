@@ -249,6 +249,11 @@ int HammingCode::getAnimationDelayMs() const
     return animationDelayMs;
 }
 
+void HammingCode::setAnimationDelayMs(int delay)
+{
+    this->animationDelayMs = delay;
+}
+
 int HammingCode::getP() const{
     return p;
 }
