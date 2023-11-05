@@ -15,7 +15,6 @@ Page {
         target: hammingCode
     }
 
-
     background: Rectangle {
         color: "white"
     }

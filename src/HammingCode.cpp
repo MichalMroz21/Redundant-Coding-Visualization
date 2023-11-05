@@ -11,6 +11,7 @@ void HammingCode::setInitialData(QBitArray data, bool extend){
     this->p = calculateP();
     this->animationDelayMs = 1000;
     this->encodingExtended = extend;
+    this->receivedCode.clear();
 }
 
 void HammingCode::setInitialData(QString data, bool extend)
@@ -150,6 +151,11 @@ void HammingCode::encodeDataAsync(bool forQML){
     int n = this->m + this->p, dataPtr{};
 
     QBitArray dataEncoded(n);
+
+    if(forQML){
+        emit pushArray(this->getDataStr());
+        emit pushEmptyArray(n);
+    }
 
     for(int i = 0; i < n; i++){
         if(!isPowerTwo(i + 1)) dataEncoded[i] = data[dataPtr++]; //copying non-parity bits

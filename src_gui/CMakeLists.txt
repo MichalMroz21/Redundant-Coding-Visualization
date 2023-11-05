@@ -1,5 +1,5 @@
 file(GLOB FOLDER_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}
-    *.qml FormComponents/*.qml)
+    *.qml FormComponents/*.qml VisualizeComponents/*.qml)
 
 foreach(QML_FILE ${FOLDER_FILES})
     add_files(${QML_FILE} "QML_FILES")
