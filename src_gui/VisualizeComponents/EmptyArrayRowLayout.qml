@@ -11,7 +11,9 @@ RowLayout{
     property var array : children
     property bool clickChange : false
 
-    property int changeLimit : 2
+    property bool isExtended
+
+    property int changeLimit : 1 + isExtended
     property int currentChanged : 0
     property var changedArr : new Array(model).fill(false);
 

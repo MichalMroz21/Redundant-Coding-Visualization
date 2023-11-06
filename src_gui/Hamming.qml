@@ -88,12 +88,12 @@ Page {
 
         function onPushArray(str){
             var component = Qt.createComponent("VisualizeComponents/ArrayRowLayout.qml");
-            arrays.push(component.createObject(visualizeBase, {myArr: str}));
+            arrays.push(component.createObject(visualizeBase, {myArr: str, isExtended: hammingCode.getEncodingExtended()}));
         }
 
         function onPushEmptyArray(size){
             var component = Qt.createComponent("VisualizeComponents/EmptyArrayRowLayout.qml");
-            arrays.push(component.createObject(visualizeBase, {model: size}));
+            arrays.push(component.createObject(visualizeBase, {model: size, isExtended: hammingCode.getEncodingExtended()}));
         }
 
         function onInsertArray(index, str){
@@ -211,7 +211,7 @@ Page {
             stageText.text = "";
 
             var component = Qt.createComponent("VisualizeComponents/correctErrorHammingForm.qml");
-            hammingError = component.createObject(visualizeBase, {visualizeConnection: hammingVisualizeConnection});
+            hammingError = component.createObject(visualizeBase, {visualizeConnection: hammingVisualizeConnection, isExtended: hammingCode.getEncodingExtended()});
 
             onSetClickAllow(0, true);
         }

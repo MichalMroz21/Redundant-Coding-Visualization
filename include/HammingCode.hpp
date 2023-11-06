@@ -19,7 +19,7 @@ public:
 
     QBitArray getReceivedCode() const;
 
-    bool getEncodingExtended() const, isPowerTwo(int n);
+    bool isPowerTwo(int n);
 
 public slots:
 
@@ -42,6 +42,8 @@ public slots:
     QString getDataStr();
 
     int getAnimationDelayMs() const;
+    bool getEncodingExtended() const;
+
     void setAnimationDelayMs(int delay);
 
 //QML Hamming.qml visualization API

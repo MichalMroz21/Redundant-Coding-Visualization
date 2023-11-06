@@ -15,6 +15,7 @@ ColumnLayout{
     Layout.alignment: Qt.AlignCenter
 
     property var visualizeConnection;
+    property bool isExtended;
 
     ColumnLayout {
 
@@ -32,7 +33,7 @@ ColumnLayout{
         Text{
             Layout.alignment: Qt.AlignHCenter
 
-            text: "Zmień od 0 do 2 bitów klikając na nie"
+            text: "Zmień od 0 do " + (1 + parent.parent.isExtended).toString() + " bitów klikając na nie"
             font.pixelSize: 15
             font.italic: true
             color: "black"
