@@ -162,7 +162,7 @@ void HammingCode::encodeDataAsync(bool forQML){
         emit pushArray(this->getDataStr());
 
         QThread::currentThread()->msleep(this->animationDelayMs);
-        emit pushEmptyArray(n);
+        emit pushEmptyArray(n);       
     }
 
     for(int i = 0; i < n; i++){
@@ -173,15 +173,15 @@ void HammingCode::encodeDataAsync(bool forQML){
         if(!isParity) dataEncoded[i] = data[dataPtr]; //copying non-parity bits
 
         if(forQML){
-            emit turnBitOn(0, dataPtr, "blue");
+            emit turnBitOnAutoOff(0, dataPtr, "blue");
 
             if(!isParity) {
-                emit turnBitOn(1, i, "green");
+                emit turnBitOnAutoOff(1, i, "green");
                 emit setBit(1, i, dataBit ? "1" : "0");
             }
 
             else {
-                emit turnBitOn(1, i, "red");
+                emit turnBitOnAutoOff(1, i, "red");
                 emit setBit(1, i, "0");
             }
 
@@ -202,14 +202,29 @@ void HammingCode::encodeDataAsync(bool forQML){
 
         int xorVal = 0; //counting number of 1's for each parity bit, xor just signals even/odd count
 
+        if(forQML){
+            emit turnBitOn(0, i - 1, "yellow");
+            QThread::currentThread()->msleep(this->animationDelayMs);
+        }
+
         for(int j = i + 1; j <= n; j++){
             if(j & (1 << bit)){ //bit manipulation trick
                 xorVal ^= dataEncoded[j - 1];
+                if(forQML){
+                    emit turnBitOnAutoOff(0, j - 1, "red");
+                    QThread::currentThread()->msleep(this->animationDelayMs);
+                }
             }
         }
 
         dataEncoded[i - 1] = xorVal; //keeping even number of 1's in the code
         bit++;
+
+        if(forQML){
+            emit turnBitOnAutoOff(0, i - 1, "green");
+            emit setBit(0, i - 1, xorVal ? "1" : "0");
+            QThread::currentThread()->msleep(this->animationDelayMs);
+        }
     }
 
     //putting dataEncoded into data
@@ -221,7 +236,23 @@ void HammingCode::encodeDataAsync(bool forQML){
 
         int oneCnt{};
 
-        data[0] = dataEncoded.count(true) & 1; //extended parity bit at the beginning
+        for(int i = 0; i < n; i++){
+
+            if(forQML){
+                emit turnBitOnAutoOff(0, i, "red");
+                QThread::currentThread()->msleep(this->animationDelayMs);
+            }
+
+            oneCnt += dataEncoded[i];
+        }
+
+        data[0] = oneCnt & 1; //extended parity bit at the beginning
+
+        if(forQML){
+            emit insertBit(0, 0, (oneCnt & 1) == 1 ? "1" : "0");
+            emit turnBitOnAutoOff(0, 0, "purple");
+            QThread::currentThread()->msleep(this->animationDelayMs);
+        }
 
         for (int i = 0; i < n; i++) {
             data[i + 1] = dataEncoded[i]; //copy the rest into data

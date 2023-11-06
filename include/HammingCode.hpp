@@ -45,6 +45,8 @@ public slots:
 //QML Hamming.qml visualization API
 signals:
 
+    void turnBitOnAutoOff(int arrIndex, int index, QString color = "");
+
     void turnBitOn(int arrIndex, int index, QString color = "");
     void turnBitOff(int arrIndex, int index);
 
@@ -56,6 +58,11 @@ signals:
 
     void setBit(int arrIndex, int index, QString bit);
     void negateBit(int arrIndex, int index);
+
+    void insertEmptyBit(int arrIndex, int index);
+    void insertBit(int arrIndex, int index, QString bit);
+
+    void insertArray(int index, QString str);
 
 private:
 

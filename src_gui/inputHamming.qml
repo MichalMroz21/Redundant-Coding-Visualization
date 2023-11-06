@@ -87,7 +87,7 @@ Page {
                 onClicked:{
 
                     if(hammingData.text.length > 0){
-                        hammingCode.setInitialData(hammingData.text, additionalBit.state);
+                        hammingCode.setInitialData(hammingData.text, additionalBit.checked);
                         stackView.push("Hamming.qml");
                     }
                 }

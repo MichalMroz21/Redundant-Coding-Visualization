@@ -21,7 +21,7 @@ RowLayout{
 
             Text {
                 anchors.centerIn: parent
-                text: ""
+                text: " "
                 color: "black"
             }
 
