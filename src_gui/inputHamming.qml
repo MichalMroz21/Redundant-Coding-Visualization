@@ -66,6 +66,24 @@ Page {
                 font.pointSize: 0.01 * (root.width + root.height)
             }
 
+            Text {
+                Layout.alignment: Qt.AlignHCenter
+
+                text: "Odstępy animacji: " + animationDelay.value.toString() + " ms"
+                font.pixelSize: 20
+            }
+
+            Slider {
+                id: animationDelay
+
+                Layout.alignment: Qt.AlignHCenter
+
+                snapMode: RangeSlider.SnapOnRelease
+                stepSize: 100
+                to: 3000
+                value: 1000
+            }
+
             RowLayout{
 
                 Layout.alignment: Qt.AlignHCenter
@@ -87,8 +105,12 @@ Page {
                 onClicked:{
 
                     if(hammingData.text.length > 0){
-                        hammingCode.setInitialData(hammingData.text, additionalBit.checked);
+                        hammingCode.setInitialData(hammingData.text, additionalBit.checked, animationDelay.value);
                         stackView.push("Hamming.qml");
+                    }
+
+                    else{
+                        errorMsg.text = "Wpisz jakiś ciąg 0 i 1!";
                     }
                 }
             }
@@ -102,6 +124,15 @@ Page {
                 onClicked:{
                     stackView.push("Main.qml");
                 }
+            }
+
+            Text {
+                id: errorMsg
+                Layout.alignment: Qt.AlignHCenter
+
+                text: ""
+                font.pixelSize: 15
+                color: "red"
             }
         }
     }

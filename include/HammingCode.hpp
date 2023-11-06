@@ -24,17 +24,19 @@ public:
 public slots:
 
     int calculateP();
-    int correctError();
-    int correctErrorExtended();
-    int correctErrorStandard();
 
+    int correctErrorExtended(bool forQML);
+    int correctErrorStandard(bool forQML);
+
+    int correctError(bool forQML);
     void encodeDataAsync(bool forQML);
     void encodeData(bool forQML);
 
-    void setInitialData(QBitArray data, bool extend);
-    void setInitialData(QString data, bool extend);
+    void setInitialData(QBitArray data, bool extend, int animationSpeed = 1000);
+    void setInitialData(QString data, bool extend, int animationSpeed = 1000);
 
     void sendCode(QBitArray send);
+    void sendCode(QString send);
 
     QBitArray getData();
     QString getDataStr();
@@ -63,6 +65,11 @@ signals:
     void insertBit(int arrIndex, int index, QString bit);
 
     void insertArray(int index, QString str);
+
+    void setBelowText(QString str);
+    void setClickAllow(int arrIndex, bool isAllowed);
+
+    void encodingEnd();
 
 private:
 

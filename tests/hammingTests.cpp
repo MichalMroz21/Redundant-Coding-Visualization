@@ -129,7 +129,7 @@ TEST(Hamming, hammingErrorCorrection){
         hammingCode.data()->encodeData(false);
         hammingCode->sendCode(toBeSent);
 
-        int errorPos = hammingCode.data()->correctError();
+        int errorPos = hammingCode.data()->correctError(false);
 
         ASSERT_EQ(errorPos, expectedErrorPos);
     }
@@ -164,7 +164,7 @@ TEST(Hamming, hammingErrorCorrectionExtended){
         hammingCode.data()->encodeData(false);
         hammingCode->sendCode(toBeSent);
 
-        int errorPos = hammingCode.data()->correctError();
+        int errorPos = hammingCode.data()->correctError(false);
 
         ASSERT_EQ(errorPos, expectedErrorPos);
     }

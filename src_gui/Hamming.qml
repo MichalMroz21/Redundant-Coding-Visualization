@@ -23,11 +23,15 @@ Page {
 
     ColumnLayout {
 
+        id: columnBase
+
         width: parent.width
         height: parent.height
 
         scale: root.width / 1000.0
         spacing: 0
+
+        Layout.alignment: Qt.AlignCenter
 
         ColumnLayout{
             id: visualizeBase
@@ -35,6 +39,20 @@ Page {
             Layout.alignment: Qt.AlignCenter
             spacing: 10
         }
+    }
+
+    Text{
+        id: belowText
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
+        bottomPadding: root.height / 4
+        font.pixelSize: 20
+        color: "dodgerblue"
+        text: ""
+    }
+
+    Item{
+        id: formBase
     }
 
     Timer {
@@ -45,9 +63,11 @@ Page {
 
         target: hammingCode
 
+        id: hammingVisualizeConnection
+
         property var arrays : []
 
-        function delay(delayTime,cb) {
+        function delay(delayTime, cb) {
             timer.interval = delayTime;
             timer.repeat = false;
             timer.triggered.connect(cb);
@@ -155,8 +175,11 @@ Page {
             arrays[arrIndex].array[index].color = color;
         }
 
+        //its kinda scuffed though, so don't use it, lol
         function onTurnBitOnAutoOff(arrIndex, index, color){
+
             if(color === "") color = "red";
+
             arrays[arrIndex].array[index].color = color;
 
             var fn = function(){
@@ -167,9 +190,41 @@ Page {
             delay(0.995 * hammingCode.getAnimationDelayMs(), fn);
         }
 
+        function onSetBelowText(str){
+            belowText.text = str;
+        }
+
+        function onSetClickAllow(arrIndex, isAllowed){
+            arrays[arrIndex].clickChange = isAllowed;
+        }
+
         Component.onCompleted: {
-            stageText.text = "Encoding";
+            stageText.text = "Encoding...";
             hammingCode.encodeData(true);
+        }
+
+        property var hammingError;
+
+        function onEncodingEnd(){
+
+            belowText.text = "";
+            stageText.text = "";
+
+            var component = Qt.createComponent("VisualizeComponents/correctErrorHammingForm.qml");
+            hammingError = component.createObject(visualizeBase, {visualizeConnection: hammingVisualizeConnection});
+
+            onSetClickAllow(0, true);
+        }
+
+        function correctingErrors(){
+
+            onSetClickAllow(0, false);
+
+            hammingError.destroy();
+            stageText.text = "Finding error(s)...";
+
+            hammingCode.sendCode(getArrayStr(0));
+            hammingCode.correctError(true);
         }
     }
 
