@@ -78,6 +78,9 @@ Page {
 
                 Layout.alignment: Qt.AlignHCenter
 
+                ToolTip.delay: 1000
+                ToolTip.visible: hovered
+                ToolTip.text: qsTr("Zmień czas")
                 snapMode: RangeSlider.SnapOnRelease
                 stepSize: 100
                 to: 3000
@@ -100,6 +103,9 @@ Page {
                 Layout.alignment: Qt.AlignHCenter
 
                 id: vizualizeButton
+                ToolTip.delay: 1000
+                ToolTip.visible: hovered
+                ToolTip.text: qsTr("Przejdź do wizualizacji algorytmu")
                 text: qsTr("Wizualizuj")
 
                 onClicked:{
@@ -119,7 +125,10 @@ Page {
                 Layout.alignment: Qt.AlignHCenter
 
                 id: backButton
-                text: qsTr("Cofnij")
+                ToolTip.delay: 1000
+                ToolTip.visible: hovered
+                ToolTip.text: qsTr("Wróć do menu głównego")
+                text: qsTr("Wróć")
 
                 onClicked:{
                     stackView.push("Main.qml");
