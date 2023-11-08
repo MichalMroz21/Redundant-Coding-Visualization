@@ -11,7 +11,7 @@ class HammingCode : public QObject
 
 public:
 
-    explicit HammingCode(QBitArray data, QObject *parent = nullptr);
+    explicit HammingCode(QObject *parent = nullptr);
 
     void setP(int newP), setM(int newM), setReceivedCode(const QBitArray& newReceivedCode);
 
@@ -19,28 +19,64 @@ public:
 
     QBitArray getReceivedCode() const;
 
-    bool getEncodingExtended() const, isPowerTwo(int n);
+    bool isPowerTwo(int n);
 
 public slots:
 
     int calculateP();
-    int correctError();
-    int correctErrorExtended();
-    int correctErrorStandard();
 
-    void encodeData(bool extend = false);
-    void setInitialData(QBitArray data);
+    int correctErrorExtended(bool forQML);
+    int correctErrorStandard(bool forQML);
+
+    int correctError(bool forQML);
+    void encodeDataAsync(bool forQML);
+    void encodeData(bool forQML);
+
+    void setInitialData(QBitArray data, bool extend, int animationSpeed = 1000);
+    void setInitialData(QString data, bool extend, int animationSpeed = 1000);
+
     void sendCode(QBitArray send);
+    void sendCode(QString send);
 
     QBitArray getData();
+    QString getDataStr();
 
+    int getAnimationDelayMs() const;
+    bool getEncodingExtended() const;
+
+    void setAnimationDelayMs(int delay);
+
+//QML Hamming.qml visualization API
 signals:
 
+    void turnBitOnAutoOff(int arrIndex, int index, QString color = "");
+
+    void turnBitOn(int arrIndex, int index, QString color = "");
+    void turnBitOff(int arrIndex, int index);
+
+    void pushEmptyArray(int size);
+    void pushArray(QString str);
+
+    void popArray();
+    void deleteArrayAtIndex(int index);
+
+    void setBit(int arrIndex, int index, QString bit);
+    void negateBit(int arrIndex, int index);
+
+    void insertEmptyBit(int arrIndex, int index);
+    void insertBit(int arrIndex, int index, QString bit);
+
+    void insertArray(int index, QString str);
+
+    void setBelowText(QString str);
+    void setClickAllow(int arrIndex, bool isAllowed);
+
+    void encodingEnd();
 
 private:
 
     QBitArray data{}, receivedCode{};
-    int p{}, m{};
+    int p{}, m{}, animationDelayMs{};
     bool encodingExtended = false;
 
 };

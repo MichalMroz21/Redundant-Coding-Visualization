@@ -5,14 +5,17 @@
 
 #include "CMakeConfig.hpp"
 #include "DebugInterceptor.hpp"
+#include "HammingCode.hpp"
 
 #include <gtest/gtest.h>
+#include <thread>
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
     auto debugInterceptor = DebugInterceptor::getInstance();
+    auto hammingCode = QSharedPointer<HammingCode>(new HammingCode());
 
     testing::InitGoogleTest(&argc, argv);
 
@@ -28,7 +31,11 @@ int main(int argc, char *argv[])
 
     QQmlApplicationEngine engine;
 
+    //adding constants to every .qml
     engine.rootContext()->setContextProperty("ROOT_PATH", ROOT_PATH);
+
+    //adding objects to every .qml
+    engine.rootContext()->setContextProperty("hammingCode", hammingCode.data());
 
     const QUrl url(u"qrc:/RedundantCoding/src_gui/Main.qml"_qs);
 
