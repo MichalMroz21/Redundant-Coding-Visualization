@@ -122,7 +122,7 @@ Page {
                 text: qsTr("Cofnij")
 
                 onClicked:{
-                    stackView.push("Main.qml");
+                    stackView.clear(); //will go back to Main.qml, dont do push(main.qml)
                 }
             }
 
