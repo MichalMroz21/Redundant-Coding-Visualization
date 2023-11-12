@@ -1,6 +1,7 @@
 import QtQuick.Window
 import QtQuick.Controls
 import QtQuick.Layouts 6.3
+import QtQuick.Dialogs
 import QtQuick
 
 Window {
@@ -45,6 +46,9 @@ Window {
 
                 Slider {
                     id: slider
+                    ToolTip.delay: 1000
+                    ToolTip.visible: hovered
+                    ToolTip.text: qsTr("Wybór algorytmu")
                     snapMode: RangeSlider.SnapOnRelease
                     stepSize: 1
                     to: 2
@@ -57,6 +61,9 @@ Window {
                 Button {
                     id: confirmButton
                     text: qsTr("Zatwierdź")
+                    ToolTip.delay: 1000
+                    ToolTip.visible: hovered
+                    ToolTip.text: qsTr("Potwierdź wybór algorytmu")
 
                     onClicked: {
                         switchPage(slider.value);
@@ -66,11 +73,23 @@ Window {
                 Button {
                     id: exitButton
                     text: qsTr("Wyjście")
+                    ToolTip.delay: 1000
+                    ToolTip.visible: hovered
+                    ToolTip.text: qsTr("Zakończ działanie programu")
 
-                    Connections {
-                        target: exitButton
-                        function onClicked(){ Qt.quit(); }
+                    onClicked: messageDialog.open()
+                }
+
+                MessageDialog {
+                    id: messageDialog
+                    title: "Zakończ"
+                    text: "Czy chcesz zakończyć działanie programu?"
+                    buttons: MessageDialog.Yes | MessageDialog.Cancel
+                    onAccepted: {
+                        console.log("End of the program.")
+                        Qt.quit()
                     }
+                    Component.onCompleted: visible = false
                 }
 
                 Image {
