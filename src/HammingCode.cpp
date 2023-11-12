@@ -258,6 +258,7 @@ int HammingCode::correctError(bool forQML)
         else return correctErrorStandard(forQML);
     }
 
+    if(forQML) emit loadMainMenuButton();
     return -1;
 }
 
