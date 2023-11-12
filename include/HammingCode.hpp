@@ -72,6 +72,7 @@ signals:
     void setClickAllow(int arrIndex, bool isAllowed);
 
     void encodingEnd();
+    void loadMainMenuButton();
 
 private:
 

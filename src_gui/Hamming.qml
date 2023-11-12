@@ -8,6 +8,7 @@ Page {
     width: root.width
     height: root.height
     visible: true
+    id: hammingPage
 
     background: Rectangle {
         color: "white"
@@ -39,7 +40,10 @@ Page {
             Layout.alignment: Qt.AlignCenter
             spacing: 10
         }
+
+
     }
+
 
     Text{
         id: belowText
@@ -50,6 +54,8 @@ Page {
         color: "dodgerblue"
         text: ""
     }
+
+
 
     Item{
         id: formBase
@@ -94,6 +100,11 @@ Page {
         function onPushEmptyArray(size){
             var component = Qt.createComponent("VisualizeComponents/EmptyArrayRowLayout.qml");
             arrays.push(component.createObject(visualizeBase, {model: size, isExtended: hammingCode.getEncodingExtended()}));
+        }
+
+        function onLoadMainMenuButton(){
+            var component = Qt.createComponent("VisualizeComponents/MenuButton.qml");
+            component.createObject(visualizeBase);
         }
 
         function onInsertArray(index, str){
