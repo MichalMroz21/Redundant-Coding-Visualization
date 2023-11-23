@@ -346,7 +346,7 @@ void HammingCode::encodeDataAsync(bool forQML){
 
         int xorVal = 0; //counting number of 1's for each parity bit, xor just signals even/odd count
 
-        QString belowText{}, initialText{"<font color=\"yellow\">Parity Bit " + QString::number(qLn(i)/qLn(2.0)) + " =</font> %1"};
+        QString belowText{}, initialText{"<font color=\"Blue\">Parity Bit " + QString::number(qLn(i)/qLn(2.0)) + " =</font> %1"};
 
         if(forQML){
             belowText = QString(initialText).arg(dataEncoded[i - 1]);
