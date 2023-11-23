@@ -44,17 +44,15 @@ Window {
                     font.pixelSize: 20
                 }
 
-                Slider {
-                    id: slider
-                    ToolTip.delay: 1000
-                    ToolTip.visible: hovered
-                    ToolTip.text: qsTr("Wybór algorytmu")
-                    snapMode: RangeSlider.SnapOnRelease
-                    stepSize: 1
-                    to: 2
-                    value: 0
-                    onMoved: {
-                        switchContent(slider.value);
+                ComboBox {
+                    id: comboBox
+                    model: ListModel{
+                        ListElement { text: "Hamming" }
+                        ListElement { text: "Drugi" }
+                        ListElement { text: "Trzeci" }
+                    }
+                    onActivated:{
+                        switchContent(currentIndex);
                     }
                 }
 
@@ -66,7 +64,7 @@ Window {
                     ToolTip.text: qsTr("Potwierdź wybór algorytmu")
 
                     onClicked: {
-                        switchPage(slider.value);
+                        switchPage(comboBox.currentIndex);
                     }
                 }
 
@@ -119,6 +117,7 @@ Window {
                         }
                     }
                 }
+
             }
 
         }
