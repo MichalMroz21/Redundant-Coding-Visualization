@@ -32,8 +32,8 @@ public slots:
     void encodeDataAsync(bool forQML);
     void encodeData(bool forQML);
 
-    void setInitialData(QBitArray data, bool extend, int animationSpeed = 1000);
-    void setInitialData(QString data, bool extend, int animationSpeed = 1000);
+    void setInitialData(QBitArray data, bool extend, int animationSpeed = 1000, bool infiniteWait = false);
+    void setInitialData(QString data, bool extend, int animationSpeed = 1000, bool infiniteWait = false);
 
     void sendCode(QBitArray send);
     void sendCode(QString send);
@@ -45,7 +45,9 @@ public slots:
     bool getEncodingExtended() const;
 
     void setAnimationDelayMs(int delay);
+    void setInfiniteWait(bool value);
 
+    void pressButton();
 //QML Hamming.qml visualization API
 signals:
 
@@ -78,7 +80,9 @@ private:
 
     QBitArray data{}, receivedCode{};
     int p{}, m{}, animationDelayMs{};
-    bool encodingExtended = false;
+    bool encodingExtended = false, infiniteWait = false, buttonPressed = false;
+
+    void waitForQml();
 
 };
 

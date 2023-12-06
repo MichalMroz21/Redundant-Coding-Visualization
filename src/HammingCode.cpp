@@ -8,16 +8,17 @@
 
 HammingCode::HammingCode(QObject *parent) : QObject{parent}{}
 
-void HammingCode::setInitialData(QBitArray data, bool extend, int animationDelay){
+void HammingCode::setInitialData(QBitArray data, bool extend, int animationDelay, bool infiniteWait){
     this->data = data;
     this->m = data.size();
     this->p = calculateP();
     this->animationDelayMs = animationDelay;
     this->encodingExtended = extend;
+    this->infiniteWait = infiniteWait;
     this->receivedCode.clear();
 }
 
-void HammingCode::setInitialData(QString data, bool extend, int animationDelay)
+void HammingCode::setInitialData(QString data, bool extend, int animationDelay, bool infiniteWait)
 {
     int n = data.size();
 
@@ -27,7 +28,7 @@ void HammingCode::setInitialData(QString data, bool extend, int animationDelay)
         bits[i] = (data[i].toLatin1() - '0');
     }
 
-    setInitialData(bits, extend, animationDelay);
+    setInitialData(bits, extend, animationDelay, infiniteWait);
 }
 
 //Simulate sending some code, it can have 1 bit error
@@ -54,10 +55,10 @@ int HammingCode::correctErrorExtended(bool forQML)
 
     if(forQML){
         emit setBelowText(initialText.arg(C));
-        QThread::currentThread()->msleep(this->animationDelayMs);
+        this->waitForQml();
 
         emit setBelowText(addText.arg(C));
-        QThread::currentThread()->msleep(this->animationDelayMs);
+        this->waitForQml();
     }
 
     for(int i = 1; i < n; i *= 2){
@@ -68,7 +69,7 @@ int HammingCode::correctErrorExtended(bool forQML)
 
         if(forQML){
             emit turnBitOn(0, i, "red");
-            QThread::currentThread()->msleep(this->animationDelayMs);
+            this->waitForQml();
             emit turnBitOff(0, i);
 
             belowText = addText.arg(receivedCode[i]);
@@ -85,7 +86,7 @@ int HammingCode::correctErrorExtended(bool forQML)
                     belowText.append(QString(" ^ %1").arg(receivedCode[j]));
                     emit setBelowText(belowText);
 
-                    QThread::currentThread()->msleep(this->animationDelayMs);
+                    this->waitForQml();
                     emit turnBitOff(0, j);
                 }
             }
@@ -93,10 +94,10 @@ int HammingCode::correctErrorExtended(bool forQML)
 
         if(forQML){
             emit setBelowText(addText.arg(xorVal));
-            QThread::currentThread()->msleep(this->animationDelayMs);
+            this->waitForQml();
 
             emit setBelowText(addText.arg(QString("%1 * %2").arg(xorVal).arg(i)));
-            QThread::currentThread()->msleep(this->animationDelayMs);
+            this->waitForQml();
         }
 
         C += xorVal * i;
@@ -104,7 +105,7 @@ int HammingCode::correctErrorExtended(bool forQML)
 
         if(forQML){
             emit setBelowText(initialText.arg(C));
-            QThread::currentThread()->msleep(this->animationDelayMs);
+            this->waitForQml();
         }
     }
 
@@ -115,7 +116,7 @@ int HammingCode::correctErrorExtended(bool forQML)
 
         emit setBelowText(belowText);
 
-        QThread::currentThread()->msleep(this->animationDelayMs);
+        this->waitForQml();
     }
 
     for(int i = 0; i < n; i++){
@@ -125,24 +126,25 @@ int HammingCode::correctErrorExtended(bool forQML)
             belowText.append(QString(" ^ %1").arg(receivedCode[i]));
             emit setBelowText(belowText);
 
-            QThread::currentThread()->msleep(this->animationDelayMs);
+            this->waitForQml();
             emit turnBitOff(0, i);
         }
 
         P ^= receivedCode[i];
     }
 
+    int ret;
     if(C == 0){ //theory from youtube
         if(P == 1){
             qInfo() << "Error occured in extended parity bit, correcting";
             emit setBelowText("Error is in extended parity bit (0)");
             receivedCode[C] = !receivedCode[C];
-            return C;
+            ret = C;
         }
         else{
             qInfo() << "No error";
             emit setBelowText("There is no error!");
-            return -1;
+            ret = -1;
         }
     }
     else{
@@ -150,14 +152,17 @@ int HammingCode::correctErrorExtended(bool forQML)
             qInfo() << "Single error occured at " + QString::number(C) + " correcting...";
             emit setBelowText("Error is at index: " + QString::number(C));
             receivedCode[C] = !receivedCode[C];
-            return C;
+            ret = C;
         }
         else{
             qInfo() << "Double error occured that cannot be corrected";
             emit setBelowText("There is a double error, but it can't be calculated where");
-            return -2;
+            ret = -2;
         }
     }
+
+    if(forQML) emit loadMainMenuButton();
+    return ret;
 }
 
 int HammingCode::correctErrorStandard(bool forQML)
@@ -168,10 +173,10 @@ int HammingCode::correctErrorStandard(bool forQML)
 
     if(forQML){
         emit setBelowText(initialText.arg(C));
-        QThread::currentThread()->msleep(this->animationDelayMs);
+        this->waitForQml();
 
         emit setBelowText(addText.arg(C));
-        QThread::currentThread()->msleep(this->animationDelayMs);
+        this->waitForQml();
     }
 
     for(int i = 1; i <= n; i *= 2){ //calculate parity bits and add them up with formula: p1 * 1 + p2 * 2 + p3 * 4 + ... = C
@@ -182,7 +187,7 @@ int HammingCode::correctErrorStandard(bool forQML)
 
         if(forQML){
             emit turnBitOn(0, i - 1, "red");
-            QThread::currentThread()->msleep(this->animationDelayMs);
+            this->waitForQml();
             emit turnBitOff(0, i - 1);
 
             belowText = addText.arg(receivedCode[i - 1]);
@@ -199,7 +204,7 @@ int HammingCode::correctErrorStandard(bool forQML)
                     belowText.append(QString(" ^ %1").arg(receivedCode[j - 1]));
                     emit setBelowText(belowText);
 
-                    QThread::currentThread()->msleep(this->animationDelayMs);
+                    this->waitForQml();
                     emit turnBitOff(0, j - 1);
                 }
             }
@@ -207,10 +212,10 @@ int HammingCode::correctErrorStandard(bool forQML)
 
         if(forQML){
             emit setBelowText(addText.arg(xorVal));
-            QThread::currentThread()->msleep(this->animationDelayMs);
+            this->waitForQml();
 
             emit setBelowText(addText.arg(QString("%1 * %2").arg(xorVal).arg(i)));
-            QThread::currentThread()->msleep(this->animationDelayMs);
+            this->waitForQml();
         }
 
         C += xorVal * i;
@@ -218,22 +223,26 @@ int HammingCode::correctErrorStandard(bool forQML)
 
         if(forQML){
             emit setBelowText(initialText.arg(C));
-            QThread::currentThread()->msleep(this->animationDelayMs);
+            this->waitForQml();
         }
     }
 
+    int ret;
     if(C == 0){ //theory from youtube
         qInfo() << "No error!";
         emit setBelowText("No error found!");
-        return -1;
+        ret = -1;
     }
     else{
         qInfo() << "Error at position: " << (C - 1);
         emit setBelowText("Error is at position: " + QString::number(C - 1));
 
         receivedCode[C - 1] = !receivedCode[C - 1];
-        return C - 1;
+        ret = C - 1;
     }
+
+    if(forQML) emit loadMainMenuButton();
+    return ret;
 }
 
 //Correct the 1 bit error in received code
@@ -258,7 +267,6 @@ int HammingCode::correctError(bool forQML)
         else return correctErrorStandard(forQML);
     }
 
-    if(forQML) emit loadMainMenuButton();
     return -1;
 }
 
@@ -300,10 +308,10 @@ void HammingCode::encodeDataAsync(bool forQML){
     QBitArray dataEncoded(n);
 
     if(forQML){
-        QThread::currentThread()->msleep(this->animationDelayMs);
+        this->waitForQml();
         emit pushArray(this->getDataStr());
 
-        QThread::currentThread()->msleep(this->animationDelayMs);
+        this->waitForQml();
         emit pushEmptyArray(n);       
     }
 
@@ -327,7 +335,7 @@ void HammingCode::encodeDataAsync(bool forQML){
                 emit setBit(1, i, "0");
             }
 
-            QThread::currentThread()->msleep(this->animationDelayMs);
+            this->waitForQml();
             emit turnBitOff(1, i);
             emit turnBitOff(0, dataPtr);
         }
@@ -337,7 +345,7 @@ void HammingCode::encodeDataAsync(bool forQML){
 
     if(forQML){
         emit deleteArrayAtIndex(0);
-        QThread::currentThread()->msleep(this->animationDelayMs);
+        this->waitForQml();
     }
 
     int bit = 0;
@@ -354,7 +362,7 @@ void HammingCode::encodeDataAsync(bool forQML){
             emit turnBitOn(0, i - 1, "yellow");
             emit setBelowText(belowText);
 
-            QThread::currentThread()->msleep(this->animationDelayMs);
+            this->waitForQml();
         }
 
         for(int j = i + 1; j <= n; j++){
@@ -368,7 +376,7 @@ void HammingCode::encodeDataAsync(bool forQML){
                     belowText.append(QString(" ^ %1").arg(dataEncoded[j - 1]));
                     emit setBelowText(belowText);
 
-                    QThread::currentThread()->msleep(this->animationDelayMs);
+                    this->waitForQml();
                     emit turnBitOff(0, j - 1);
                 }
             }
@@ -380,12 +388,12 @@ void HammingCode::encodeDataAsync(bool forQML){
         if(forQML){
 
             emit setBelowText(QString(initialText).arg(xorVal));
-            QThread::currentThread()->msleep(this->animationDelayMs);
+            this->waitForQml();
 
             emit turnBitOn(0, i - 1, "green");
             emit setBit(0, i - 1, xorVal ? "1" : "0");
 
-            QThread::currentThread()->msleep(this->animationDelayMs);
+            this->waitForQml();
 
             emit turnBitOff(0, i - 1);
             emit setBelowText(QString(""));
@@ -408,7 +416,7 @@ void HammingCode::encodeDataAsync(bool forQML){
 
             emit setBelowText(belowText);
 
-            QThread::currentThread()->msleep(this->animationDelayMs);
+            this->waitForQml();
         }
 
         for(int i = 0; i < n; i++){
@@ -418,7 +426,7 @@ void HammingCode::encodeDataAsync(bool forQML){
                 belowText.append(QString(" ^ %1").arg(dataEncoded[i]));
                 emit setBelowText(belowText);
 
-                QThread::currentThread()->msleep(this->animationDelayMs);
+                this->waitForQml();
                 emit turnBitOff(0, i);
             }
 
@@ -429,12 +437,12 @@ void HammingCode::encodeDataAsync(bool forQML){
 
         if(forQML){
             emit setBelowText(QString(initialText).arg(xorVal));
-            QThread::currentThread()->msleep(this->animationDelayMs);
+            this->waitForQml();
 
             emit insertBit(0, 0, xorVal == 1 ? "1" : "0");
             emit turnBitOn(0, 0, "purple");
 
-            QThread::currentThread()->msleep(this->animationDelayMs);
+            this->waitForQml();
 
             emit turnBitOff(0, 0);
             emit setBelowText(QString(""));
@@ -493,4 +501,22 @@ bool HammingCode::getEncodingExtended() const{
     return encodingExtended;
 }
 
+void HammingCode::setInfiniteWait(bool value)
+{
+    this->infiniteWait = value;
+}
 
+void HammingCode::waitForQml()
+{
+    if (this->infiniteWait) {
+        while (!this->buttonPressed && this->infiniteWait);
+        this->buttonPressed = false;
+    }
+    else
+        QThread::currentThread()->msleep(this->animationDelayMs);
+}
+
+void HammingCode::pressButton()
+{
+    this->buttonPressed = true;
+}
