@@ -122,7 +122,7 @@ Page {
 
                     if(hammingData.text.length > 0){
                         hammingCode.setInitialData(hammingData.text, additionalBit.checked, animationDelay.value, animationDelay.isInfinite);
-                        stackView.push("Hamming.qml");
+                        stackView.push("HammingGenerationMatrix.qml");
                     }
 
                     else{

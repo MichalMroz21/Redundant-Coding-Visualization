@@ -520,3 +520,36 @@ void HammingCode::pressButton()
 {
     this->buttonPressed = true;
 }
+
+QString HammingCode::getGenerationMatrixStr()
+{
+    QString ret{};
+
+    int numOfCols = this->m + this->p;
+    int numOfRows = this->m;
+
+    int position = 3;
+    for(int i = 0; i < numOfRows; i++) {
+        while (isPowerTwo(position)) position++;
+        if (this->encodingExtended) ret.append(QChar('1'));
+        int n = i;
+        int parityBitCounter = 0;
+        for (int j = 0; j < numOfCols; j++) {
+            bool bitUsedInCurrentPosition = false;
+            bool isParity = isPowerTwo(j + 1);
+            if(!isParity) {
+                bitUsedInCurrentPosition = n-- == 0;
+            } else {
+                bitUsedInCurrentPosition = (1 << parityBitCounter) & position;
+                parityBitCounter++;
+            }
+            ret.append(QChar(bitUsedInCurrentPosition ? '1' : '0'));
+        }
+        if (i != numOfRows - 1) ret.append(QChar('\n'));
+        position++;
+    }
+
+    return ret;
+}
+
+
