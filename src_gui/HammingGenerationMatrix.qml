@@ -22,36 +22,46 @@ Page {
 
         anchors.horizontalCenter: parent.horizontalCenter
 
-        spacing: 0
+        spacing: 5
 
         Layout.alignment: Qt.AlignCenter
 
         Text{
-            id: stageText
-            topPadding: root.height / 8
-            font.pixelSize: 26
+            font.pixelSize: 20
             color: "black"
-            Layout.alignment: Qt.AlignHCenter | Qt.AlignTop
+            Layout.alignment: Qt.AlignHCenter
+            text: qsTr("Macierz kontroli parzystości")
+        }
+
+        Column {
+            id: errorMatrixColumn
+            Layout.alignment: Qt.AlignHCenter
+
+        }
+
+        Text{
+            font.pixelSize: 20
+            color: "black"
+            Layout.alignment: Qt.AlignHCenter
             text: qsTr("Macierz generacyjna")
         }
 
         Column {
-            id: matrixColumn
+            id: generationMatrixColumn
             Layout.alignment: Qt.AlignHCenter
 
         }
 
         Button {
-            Layout.alignment: Qt.AlignHCenter
+            Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
 
-            ToolTip.delay: 1000
-            ToolTip.visible: hovered
             text: qsTr("Następny krok")
 
             onClicked: {
                 stackView.push("Hamming.qml");
             }
         }
+
     }
 
     Connections{
@@ -61,11 +71,18 @@ Page {
         id: hammingVisualizeConnection
 
         Component.onCompleted: {
-            let generationMatrixStr = hammingCode.getGenerationMatrixStr(true);
-            let rows = generationMatrixStr.split('\n');
-            for (let row of rows) {
+            var errorMatrixStr = hammingCode.getErrorMatrixStr(true);
+            var errorRows = errorMatrixStr.split('\n');
+            for (var row of errorRows) {
                 let component = Qt.createComponent("VisualizeComponents/ArrayRowLayout.qml");
-                component.createObject(matrixColumn, {myArr: row, isExtended: hammingCode.getEncodingExtended()});
+                component.createObject(errorMatrixColumn, {myArr: row, isExtended: hammingCode.getEncodingExtended()});
+            }
+
+            var generationMatrixStr = hammingCode.getGenerationMatrixStr(true);
+            var generationRows = generationMatrixStr.split('\n');
+            for (row of generationRows) {
+                let component = Qt.createComponent("VisualizeComponents/ArrayRowLayout.qml");
+                component.createObject(generationMatrixColumn, {myArr: row, isExtended: hammingCode.getEncodingExtended()});
             }
         }
 

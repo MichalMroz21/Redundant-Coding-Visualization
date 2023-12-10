@@ -531,7 +531,6 @@ QString HammingCode::getGenerationMatrixStr()
     int position = 3;
     for(int i = 0; i < numOfRows; i++) {
         while (isPowerTwo(position)) position++;
-        if (this->encodingExtended) ret.append(QChar('1'));
         int n = i;
         int parityBitCounter = 0;
         for (int j = 0; j < numOfCols; j++) {
@@ -552,4 +551,33 @@ QString HammingCode::getGenerationMatrixStr()
     return ret;
 }
 
+// columns are binary numbers in order beginning at 1
+QString HammingCode::getErrorMatrixStr() {
+    QString ret{};
 
+    int numOfCols = this->m + this->p;
+    int numOfRows = this->p;
+
+    for(int i = 0; i < numOfRows; i++) {
+        QString row{};
+
+        int zeroCount = (1 << i) - 1;
+        int colCounter = 0;
+        for (int j = 0; j < zeroCount; j++) {
+            row.append(QChar('0'));
+            colCounter++;
+        }
+        bool insertZero = false;
+        int howManyInARow = (1 << i);
+        while (colCounter < numOfCols) {
+            for (int j = 0; j < howManyInARow && colCounter < numOfCols; j++) {
+                row.append(QChar(insertZero ? '0' : '1'));
+                colCounter++;
+            }
+            insertZero = !insertZero;
+        }
+        if (i != 0) row.append(QChar('\n'));
+        ret.prepend(row);
+    }
+    return ret;
+}

@@ -41,6 +41,7 @@ public slots:
     QBitArray getData();
     QString getDataStr();
     QString getGenerationMatrixStr();
+    QString getErrorMatrixStr();
 
     int getAnimationDelayMs() const;
     bool getEncodingExtended() const;

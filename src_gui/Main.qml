@@ -163,6 +163,10 @@ Window {
        anchors.fill: parent
     }
 
+    Component.onCompleted: {
+        switchContent(0);
+    }
+
     function switchPage(index) {
 
         var pageSelected;
@@ -181,7 +185,7 @@ Window {
         switch (index) {
 
             case 0: {
-                imgDescAlgo = ["Opis Hamminga", "../assets/Hamming.png", "Hamming"];
+                imgDescAlgo = ["Opis Hamminga [TODO - teoretyczny opis, na czym polega + info o tym, że stosujemy ten wariant, gdzie macierz błędów jest skonstrowana tak, że błąd na pozycji 1 jest opisane binarnym syndromem 1]", "../assets/Hamming.png", "Hamming"];
                 break;
             }
             case 1: {
