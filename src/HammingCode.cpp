@@ -33,7 +33,7 @@ void HammingCode::setInitialData(QString data, bool extend, int animationDelay, 
 
 //Simulate sending some code, it can have 1 bit error
 void HammingCode::sendCode(QBitArray send){
-    receivedCode = send;
+    this->receivedCode = send;
 }
 
 void HammingCode::sendCode(QString send){
@@ -133,12 +133,13 @@ int HammingCode::correctErrorExtended(bool forQML)
         P ^= receivedCode[i];
     }
 
+    this->setError(C);
     int ret;
     if(C == 0){ //theory from youtube
         if(P == 1){
             qInfo() << "Error occured in extended parity bit, correcting";
             emit setBelowText("Error is in extended parity bit (0)");
-            receivedCode[C] = !receivedCode[C];
+//            receivedCode[C] = !receivedCode[C];
             ret = C;
         }
         else{
@@ -151,7 +152,7 @@ int HammingCode::correctErrorExtended(bool forQML)
         if(P == 1){
             qInfo() << "Single error occured at " + QString::number(C) + " correcting...";
             emit setBelowText("Error is at index: " + QString::number(C));
-            receivedCode[C] = !receivedCode[C];
+//            receivedCode[C] = !receivedCode[C];
             ret = C;
         }
         else{
@@ -161,7 +162,7 @@ int HammingCode::correctErrorExtended(bool forQML)
         }
     }
 
-    if(forQML) emit loadMainMenuButton();
+    if(forQML) emit endErrorCorrection(C);
     return ret;
 }
 
@@ -227,6 +228,7 @@ int HammingCode::correctErrorStandard(bool forQML)
         }
     }
 
+    this->setError(C);
     int ret;
     if(C == 0){ //theory from youtube
         qInfo() << "No error!";
@@ -237,11 +239,11 @@ int HammingCode::correctErrorStandard(bool forQML)
         qInfo() << "Error at position: " << (C - 1);
         emit setBelowText("Error is at position: " + QString::number(C - 1));
 
-        receivedCode[C - 1] = !receivedCode[C - 1];
+//        receivedCode[C - 1] = !receivedCode[C - 1];
         ret = C - 1;
     }
 
-    if(forQML) emit loadMainMenuButton();
+    if(forQML) emit endErrorCorrection(C);
     return ret;
 }
 
@@ -455,6 +457,7 @@ void HammingCode::encodeDataAsync(bool forQML){
 
     else data = dataEncoded; //just copy the rest without extending the bit
 
+    this->setEncodedStr(dataEncoded);
     if(forQML) emit encodingEnd();
 }
 
@@ -493,8 +496,14 @@ QBitArray HammingCode::getData(){
     return this->data;
 }
 
-QBitArray HammingCode::getReceivedCode() const{
-    return receivedCode;
+QString HammingCode::getReceivedCode() {
+    QString ret{};
+
+    for(int i = 0; i < this->receivedCode.size(); i++){
+        ret.append(QChar(this->receivedCode[i] + '0'));
+    }
+
+    return ret;
 }
 
 bool HammingCode::getEncodingExtended() const{
@@ -591,4 +600,33 @@ QString HammingCode::getErrorMatrixStr() {
         ret.prepend(row);
     }
     return ret;
+}
+
+void HammingCode::setEncodedStr(QBitArray encoded)
+{
+    for(int i = 0; i < encoded.size(); i++){
+        this->encodedString.append(QChar(encoded[i] + '0'));
+    }
+
+}
+
+
+QString HammingCode::getEncodedStr() {
+    return this->encodedString;
+}
+
+QString HammingCode::getError() {
+    return this->error;
+}
+
+QString HammingCode::getSyndrome() {
+    return this->syndrome;
+}
+
+void HammingCode::setError(int C)
+{
+    this->syndrome = QString::number(C, 2); // converts to binary
+    for (int i = 0; i < this->m + this->p; i++) {
+        this->error.append(QChar(i == C - 1 ? '1' : '0'));
+    }
 }

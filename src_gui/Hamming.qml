@@ -164,15 +164,19 @@ Page {
         }
 
         Button {
+            id: nextStepButton
             Layout.alignment: Qt.AlignHCenter
 
             text: qsTr("Następny krok")
 
             onClicked: {
-                hammingCode.pressButton();
+                if (goToSyndrome) stackView.push("HammingSyndrome.qml");
+                else hammingCode.pressButton();
             }
 
             visible: animationDelay.isInfinite && !visualiseButton.visible && !mainMenuButton.visible
+
+            property bool goToSyndrome: false
         }
 
     }
@@ -231,8 +235,12 @@ Page {
             emptyarrayRowLayoutRowColumn.visible = true;
         }
 
-        function onLoadMainMenuButton(){
-            mainMenuButton.visible = true;
+        function onEndErrorCorrection(C) {
+            if (C === 0) mainMenuButton.visible = true;
+            else {
+                nextStepButton.goToSyndrome = true;
+                nextStepButton.visible = true;
+            }
         }
 
         function onInsertArray(index, str){

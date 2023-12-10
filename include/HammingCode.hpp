@@ -17,8 +17,6 @@ public:
 
     int getP() const, getM() const;
 
-    QBitArray getReceivedCode() const;
-
     bool isPowerTwo(int n);
 
 public slots:
@@ -42,6 +40,10 @@ public slots:
     QString getDataStr();
     QString getGenerationMatrixStr();
     QString getErrorMatrixStr();
+    QString getSyndrome();
+    QString getError();
+    QString getEncodedStr();
+    QString getReceivedCode();
 
     int getAnimationDelayMs() const;
     bool getEncodingExtended() const;
@@ -76,14 +78,17 @@ signals:
     void setClickAllow(int arrIndex, bool isAllowed);
 
     void encodingEnd();
-    void loadMainMenuButton();
+    void endErrorCorrection(int C);
 
 private:
 
     QBitArray data{}, receivedCode{};
     int p{}, m{}, animationDelayMs{};
     bool encodingExtended = false, infiniteWait = false, buttonPressed = false;
+    QString encodedString{}, error{}, syndrome{};
 
+    void setEncodedStr(QBitArray encoded);
+    void setError(int C);
     void waitForQml();
 
 };
