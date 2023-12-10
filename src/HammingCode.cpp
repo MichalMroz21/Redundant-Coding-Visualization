@@ -521,6 +521,9 @@ void HammingCode::pressButton()
     this->buttonPressed = true;
 }
 
+// generation matrix created based on the error matrix
+// each row is one bit of input, each column means whether the bit is used
+// on this position in the encoded data (either included in parity bit or this position simply is this bit)
 QString HammingCode::getGenerationMatrixStr()
 {
     QString ret{};
@@ -528,22 +531,25 @@ QString HammingCode::getGenerationMatrixStr()
     int numOfCols = this->m + this->p;
     int numOfRows = this->m;
 
-    int position = 3;
+    int position = 3; // position in the encoded data of non-parity bit, 1 and 2 are parity
     for(int i = 0; i < numOfRows; i++) {
-        while (isPowerTwo(position)) position++;
+        QString parityRow{};
+        while (isPowerTwo(position)) position++; // has to be non-parity
         int n = i;
         int parityBitCounter = 0;
         for (int j = 0; j < numOfCols; j++) {
             bool bitUsedInCurrentPosition = false;
             bool isParity = isPowerTwo(j + 1);
             if(!isParity) {
-                bitUsedInCurrentPosition = n-- == 0;
+                bitUsedInCurrentPosition = n-- == 0; // bit used at n-th non-parity position
+                ret.append(QChar(bitUsedInCurrentPosition ? '1' : '0'));
             } else {
                 bitUsedInCurrentPosition = (1 << parityBitCounter) & position;
                 parityBitCounter++;
+                parityRow.append(QChar(bitUsedInCurrentPosition ? '1' : '0'));
             }
-            ret.append(QChar(bitUsedInCurrentPosition ? '1' : '0'));
         }
+        ret.append(parityRow); // non-parity columns first - makes the matrix canonical
         if (i != numOfRows - 1) ret.append(QChar('\n'));
         position++;
     }
@@ -552,6 +558,11 @@ QString HammingCode::getGenerationMatrixStr()
 }
 
 // columns are binary numbers in order beginning at 1
+// 0 0 0 1 1 1 1
+// 0 1 1 0 0 1 1
+// 1 0 1 0 1 0 1
+// basically, the last row is 0 then 1 then 0
+// previous is two 0s, two 1s, etc, except one fewer zero at the beginning (because start at 1 not 0)
 QString HammingCode::getErrorMatrixStr() {
     QString ret{};
 
