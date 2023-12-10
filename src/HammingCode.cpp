@@ -323,7 +323,7 @@ void HammingCode::encodeDataAsync(bool forQML){
         if(!isParity) dataEncoded[i] = data[dataPtr]; //copying non-parity bits
 
         if(forQML){
-            emit turnBitOn(0, dataPtr, "blue");
+            emit turnBitOn(0, dataPtr, "light blue");
 
             if(!isParity) {
                 emit turnBitOn(1, i, "green");
