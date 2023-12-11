@@ -185,7 +185,8 @@ Window {
         switch (index) {
 
             case 0: {
-                imgDescAlgo = ["Opis Hamminga [TODO - teoretyczny opis, na czym polega + info o tym, że stosujemy ten wariant, gdzie macierz błędów jest skonstrowana tak, że błąd na pozycji 1 jest opisane binarnym syndromem 1]", "../assets/Hamming.png", "Hamming"];
+                // TODO - lepszy opis?
+                imgDescAlgo = ["Kod Hamminga (n,k) koduje k bitów informacji na n bitach z użyciem dodatkowych bitów parzystości. Pozwala na detekcję i naprawę pojedynczego błędu. n jest najbliższą potęgą dwójki po k. Tu kod jest generowany na podstawie macierzy kontroli parzystości, gdzie reprezentacja liczbowa syndromu błędu wskazuje na pozycję, na której wystąpił błąd (syndrom 0 oznacza brak błędu)", "../assets/Hamming.png", "Hamming"];
                 break;
             }
             case 1: {

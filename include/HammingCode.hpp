@@ -44,6 +44,7 @@ public slots:
     QString getError();
     QString getEncodedStr();
     QString getReceivedCode();
+    QString getSymbol(int index);
 
     int getAnimationDelayMs() const;
     bool getEncodingExtended() const;
@@ -61,7 +62,7 @@ signals:
     void turnBitOff(int arrIndex, int index);
 
     void pushEmptyArray(int size);
-    void pushArray(QString str);
+    void pushArray(QString str, bool showSymbols);
 
     void popArray();
     void deleteArrayAtIndex(int index);
@@ -70,11 +71,12 @@ signals:
     void negateBit(int arrIndex, int index);
 
     void insertEmptyBit(int arrIndex, int index);
-    void insertBit(int arrIndex, int index, QString bit);
+    void insertBit(int arrIndex, int index, QString bit, bool showSymbols);
 
-    void insertArray(int index, QString str);
+    void insertArray(int index, QString str, bool showSymbols);
 
     void setBelowText(QString str);
+    void setBelowTextExtended(QString str);
     void setClickAllow(int arrIndex, bool isAllowed);
 
     void encodingEnd();
@@ -86,11 +88,12 @@ private:
     int p{}, m{}, animationDelayMs{};
     bool encodingExtended = false, infiniteWait = false, buttonPressed = false;
     QString encodedString{}, error{}, syndrome{};
+    QVector<QString> symbols;
 
     void setEncodedStr(QBitArray encoded);
     void setError(int C);
     void waitForQml();
-
+    void setSymbols();
 };
 
 #endif // HAMMINGCODE_HPP

@@ -84,6 +84,16 @@ Page {
             Layout.fillHeight: true
         }
 
+        Text{
+            id: belowTextExtended
+            anchors.horizontalCenter: parent.horizontalCenter
+            font.pixelSize: 20
+            color: "dodgerblue"
+            text: ""
+            Layout.alignment: Qt.AlignHCenter
+            Layout.fillHeight: true
+        }
+
         Column {
             bottomPadding: root.height / 8
             Layout.alignment: Qt.AlignHCenter
@@ -217,9 +227,9 @@ Page {
         }
 
 
-        function onPushArray(str){
+        function onPushArray(str, showSymbols){
             var component = Qt.createComponent("VisualizeComponents/ArrayRowLayout.qml");
-            var arrayRowLayout = component.createObject(arrayRowLayoutRowColumn, {myArr: str, isExtended: hammingCode.getEncodingExtended()});
+            var arrayRowLayout = component.createObject(arrayRowLayoutRowColumn, {myArr: str, isExtended: hammingCode.getEncodingExtended(), showSymbols: showSymbols});
 
             arrays.push(arrayRowLayout);
 
@@ -243,10 +253,10 @@ Page {
             }
         }
 
-        function onInsertArray(index, str){
+        function onInsertArray(index, str, showSymbols){
 
             if(arrays.length === 0){
-                onPushArray(str);
+                onPushArray(str, showSymbols);
                 return;
             }
 
@@ -261,8 +271,8 @@ Page {
             }
 
             for(var j = 0; j < bitStrs.length; j++){
-                if(j === index) onPushArray(str);
-                onPushArray(bitStrs[j]);
+                if(j === index) onPushArray(str, showSymbols);
+                onPushArray(bitStrs[j], showSymbols);
             }
         }
 
@@ -293,14 +303,14 @@ Page {
             arrays[arrIndex].array[index].children[0].text = bit;
         }
 
-        function onInsertBit(arrIndex, index, bit){
+        function onInsertBit(arrIndex, index, bit, showSymbols){
             var bitStr = getArrayStr(arrIndex);
 
             onDeleteArrayAtIndex(arrIndex);
 
             bitStr = bitStr.slice(0, index) + bit + bitStr.slice(index);
 
-            onInsertArray(arrIndex, bitStr);
+            onInsertArray(arrIndex, bitStr, showSymbols);
         }
 
         function onInsertEmptyBit(arrIndex, index, bit){
@@ -339,6 +349,10 @@ Page {
 
         function onSetBelowText(str){
             belowText.text = str;
+        }
+
+        function onSetBelowTextExtended(str) {
+            belowTextExtended.text = str;
         }
 
         function onSetClickAllow(arrIndex, isAllowed){

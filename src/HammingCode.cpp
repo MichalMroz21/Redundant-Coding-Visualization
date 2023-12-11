@@ -51,7 +51,7 @@ int HammingCode::correctErrorExtended(bool forQML)
 {
     int n = this->m + this->p, C{}, P{}, bit{};
 
-    QString belowText{}, initialText{"<font color=\"orange\">C =</font> %1"}, addText{"<font color=\"orange\">C +=</font> %1"};
+    QString belowText{}, initialText{"<font color=\"orange\">C =</font> %1"}, addText{"<font color=\"orange\">C +=</font> %1"}, belowTextExt{};
 
     if(forQML){
         emit setBelowText(initialText.arg(C));
@@ -73,6 +73,7 @@ int HammingCode::correctErrorExtended(bool forQML)
             emit turnBitOff(0, i);
 
             belowText = addText.arg(receivedCode[i]);
+            belowTextExt = addText.arg(this->getSymbol(i));
         }
 
         for(int j = i + 1; j < n; j++){  //indexing +1, so <= n -> < n
@@ -85,6 +86,8 @@ int HammingCode::correctErrorExtended(bool forQML)
                     emit turnBitOn(0, j, "red");
                     belowText.append(QString(" ^ %1").arg(receivedCode[j]));
                     emit setBelowText(belowText);
+                    belowTextExt.append(QString(" ^ %1").arg(this->getSymbol(j)));
+                    emit setBelowTextExtended(belowTextExt);
 
                     this->waitForQml();
                     emit turnBitOff(0, j);
@@ -97,6 +100,9 @@ int HammingCode::correctErrorExtended(bool forQML)
             this->waitForQml();
 
             emit setBelowText(addText.arg(QString("%1 * %2").arg(xorVal).arg(i)));
+            int powerOfTwo = qFloor(qLn(i) / qLn(2.0));
+            belowTextExt.append(QString(" * 2^%1").arg(powerOfTwo));
+            emit setBelowTextExtended(belowTextExt);
             this->waitForQml();
         }
 
@@ -105,16 +111,19 @@ int HammingCode::correctErrorExtended(bool forQML)
 
         if(forQML){
             emit setBelowText(initialText.arg(C));
+            emit setBelowTextExtended(QString(""));
             this->waitForQml();
         }
     }
 
-    initialText = "<font color=\"purple\">P =</font> %1";
+    initialText = "<font color=\"purple\">P =</font> ";
 
     if(forQML){
-        belowText = QString(initialText).arg(P);
+        belowText = QString(initialText);
+        belowTextExt = QString(initialText);
 
         emit setBelowText(belowText);
+        emit setBelowTextExtended(belowTextExt);
 
         this->waitForQml();
     }
@@ -123,8 +132,10 @@ int HammingCode::correctErrorExtended(bool forQML)
 
         if(forQML){
             emit turnBitOn(0, i, "red");
-            belowText.append(QString(" ^ %1").arg(receivedCode[i]));
+            belowText.append(QString(i == 0 ? "%1" : " ^ %1").arg(receivedCode[i]));
             emit setBelowText(belowText);
+            belowTextExt.append(QString(i == 0 ? "%1" : " ^ %1").arg(this->getSymbol(i)));
+            emit setBelowTextExtended(belowTextExt);
 
             this->waitForQml();
             emit turnBitOff(0, i);
@@ -133,6 +144,7 @@ int HammingCode::correctErrorExtended(bool forQML)
         P ^= receivedCode[i];
     }
 
+    emit setBelowTextExtended(QString(""));
     this->setError(C);
     int ret;
     if(C == 0){ //theory from youtube
@@ -170,7 +182,7 @@ int HammingCode::correctErrorStandard(bool forQML)
 {
     int n = this->m + this->p, C{}, bit{};
 
-    QString belowText{}, initialText{"<font color=\"orange\">C =</font> %1"}, addText{"<font color=\"orange\">C +=</font> %1"};
+    QString belowText{}, initialText{"<font color=\"orange\">C =</font> %1"}, addText{"<font color=\"orange\">C +=</font> %1"}, belowTextExt{};
 
     if(forQML){
         emit setBelowText(initialText.arg(C));
@@ -192,6 +204,7 @@ int HammingCode::correctErrorStandard(bool forQML)
             emit turnBitOff(0, i - 1);
 
             belowText = addText.arg(receivedCode[i - 1]);
+            belowTextExt = addText.arg(this->getSymbol(i - 1));
         }
 
         for(int j = i + 1; j <= n; j++){
@@ -207,6 +220,8 @@ int HammingCode::correctErrorStandard(bool forQML)
 
                     this->waitForQml();
                     emit turnBitOff(0, j - 1);
+                    belowTextExt.append(QString(" ^ %1").arg(this->getSymbol(j - 1)));
+                    emit setBelowTextExtended(belowTextExt);
                 }
             }
         }
@@ -216,6 +231,9 @@ int HammingCode::correctErrorStandard(bool forQML)
             this->waitForQml();
 
             emit setBelowText(addText.arg(QString("%1 * %2").arg(xorVal).arg(i)));
+            int powerOfTwo = qFloor(qLn(i) / qLn(2.0));
+            belowTextExt.append(QString(" * 2^%1").arg(powerOfTwo));
+            emit setBelowTextExtended(belowTextExt);
             this->waitForQml();
         }
 
@@ -224,6 +242,7 @@ int HammingCode::correctErrorStandard(bool forQML)
 
         if(forQML){
             emit setBelowText(initialText.arg(C));
+            emit setBelowTextExtended(QString(""));
             this->waitForQml();
         }
     }
@@ -304,6 +323,7 @@ void HammingCode::encodeData(bool forQML){
 }
 
 void HammingCode::encodeDataAsync(bool forQML){
+    this->setSymbols();
 
     int n = this->m + this->p, dataPtr{};
 
@@ -311,7 +331,7 @@ void HammingCode::encodeDataAsync(bool forQML){
 
     if(forQML){
         this->waitForQml();
-        emit pushArray(this->getDataStr());
+        emit pushArray(this->getDataStr(), false);
 
         this->waitForQml();
         emit pushEmptyArray(n);       
@@ -356,13 +376,14 @@ void HammingCode::encodeDataAsync(bool forQML){
 
         int xorVal = 0; //counting number of 1's for each parity bit, xor just signals even/odd count
 
-        QString belowText{}, initialText{"<font color=\"Blue\">Parity Bit " + QString::number(qLn(i)/qLn(2.0)) + " =</font> %1"};
-
+        QString belowText{}, initialText{"<font color=\"Blue\">Parity Bit " + QString::number(qLn(i)/qLn(2.0)) + " =</font> %1"}, belowTextExt{};
         if(forQML){
             belowText = QString(initialText).arg(dataEncoded[i - 1]);
+            belowTextExt = QString("%1 = %1").arg(this->getSymbol(i - 1));
 
             emit turnBitOn(0, i - 1, "yellow");
             emit setBelowText(belowText);
+            emit setBelowTextExtended(belowTextExt);
 
             this->waitForQml();
         }
@@ -377,6 +398,8 @@ void HammingCode::encodeDataAsync(bool forQML){
                     emit turnBitOn(0, j - 1, "red");
                     belowText.append(QString(" ^ %1").arg(dataEncoded[j - 1]));
                     emit setBelowText(belowText);
+                    belowTextExt.append(QString(" ^ %1").arg(this->getSymbol(j - 1)));
+                    emit setBelowTextExtended(belowTextExt);
 
                     this->waitForQml();
                     emit turnBitOff(0, j - 1);
@@ -399,6 +422,7 @@ void HammingCode::encodeDataAsync(bool forQML){
 
             emit turnBitOff(0, i - 1);
             emit setBelowText(QString(""));
+            emit setBelowTextExtended(QString(""));
         }
     }
 
@@ -409,7 +433,8 @@ void HammingCode::encodeDataAsync(bool forQML){
 
         data = QBitArray(n + 1);
 
-        QString belowText{}, initialText{"<font color=\"purple\">Additional Parity Bit =</font> %1"};
+        QString belowText{}, initialText{"<font color=\"purple\">Additional Parity Bit =</font> %1"}, belowTextExt{"p = p"};
+        this->symbols.prepend(QString("p"));
 
         int xorVal{};
 
@@ -417,6 +442,7 @@ void HammingCode::encodeDataAsync(bool forQML){
             belowText = QString(initialText).arg(xorVal);
 
             emit setBelowText(belowText);
+            emit setBelowTextExtended(belowTextExt);
 
             this->waitForQml();
         }
@@ -427,6 +453,8 @@ void HammingCode::encodeDataAsync(bool forQML){
                 emit turnBitOn(0, i, "red");
                 belowText.append(QString(" ^ %1").arg(dataEncoded[i]));
                 emit setBelowText(belowText);
+                belowTextExt.append(QString(" ^ %1").arg(this->getSymbol(i + 1)));
+                emit setBelowTextExtended(belowTextExt);
 
                 this->waitForQml();
                 emit turnBitOff(0, i);
@@ -441,13 +469,14 @@ void HammingCode::encodeDataAsync(bool forQML){
             emit setBelowText(QString(initialText).arg(xorVal));
             this->waitForQml();
 
-            emit insertBit(0, 0, xorVal == 1 ? "1" : "0");
+            emit insertBit(0, 0, xorVal == 1 ? "1" : "0", true);
             emit turnBitOn(0, 0, "purple");
 
             this->waitForQml();
 
             emit turnBitOff(0, 0);
             emit setBelowText(QString(""));
+            emit setBelowTextExtended(QString(""));
         }
 
         for (int i = 0; i < n; i++) {
@@ -628,5 +657,20 @@ void HammingCode::setError(int C)
     this->syndrome = QString::number(C, 2); // converts to binary
     for (int i = 0; i < this->m + this->p; i++) {
         this->error.append(QChar(i == C - 1 ? '1' : '0'));
+    }
+}
+
+QString HammingCode::getSymbol(int index) {
+    return this->symbols[index];
+}
+
+void HammingCode::setSymbols() {
+    int parityIndex = 0;
+    int dataIndex = 0;
+    for (int i = 0; i < this->m + this->p; i++) {
+        QString symbol;
+        if (isPowerTwo(i + 1)) symbol = QString("p%1").arg(parityIndex++);
+        else symbol = QString("d%1").arg(dataIndex++);
+        this->symbols << symbol;
     }
 }
