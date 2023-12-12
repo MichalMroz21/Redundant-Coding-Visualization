@@ -145,7 +145,7 @@ Window {
                     id: descriptionText
 
                     text: qsTr("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.")
-                    font.pixelSize: 24
+                    font.pixelSize: 20
 
                     wrapMode: Text.WordWrap
 
@@ -185,8 +185,7 @@ Window {
         switch (index) {
 
             case 0: {
-                // TODO - lepszy opis?
-                imgDescAlgo = ["Kod Hamminga (n,k) koduje k bitów informacji na n bitach z użyciem dodatkowych bitów parzystości. Pozwala na detekcję i naprawę pojedynczego błędu. n jest najbliższą potęgą dwójki po k. Tu kod jest generowany na podstawie macierzy kontroli parzystości, gdzie reprezentacja liczbowa syndromu błędu wskazuje na pozycję, na której wystąpił błąd (syndrom 0 oznacza brak błędu)", "../assets/Hamming.png", "Hamming"];
+                imgDescAlgo = ["Kod Hamminga (n,k) koduje k bitów informacji na n bitach z użyciem dodatkowych bitów parzystości. Pozwala na detekcję i naprawę pojedynczego błędu.\nW tej implementacji kod jest generowany na podstawie macierzy kontroli parzystości, gdzie reprezentacja liczbowa syndromu błędu wskazuje na pozycję, na której wystąpił błąd (syndrom 0 oznacza brak błędu). Bity parzystości są umieszczone na pozycjach będących potęgami 2 (1, 2, 4...), pierwszy zawiera XORa bitów będących na pozycjach, które mają 1 na najmłodszym bicie, drugi na drugim najmłodszym bicie itp", "../assets/Hamming.png", "Hamming"];
                 break;
             }
             case 1: {
