@@ -69,7 +69,7 @@ Page {
             Text {
                 Layout.alignment: Qt.AlignHCenter
 
-                text: "Odstępy animacji: " + animationDelay.value.toString() + " ms"
+                text: "Odstępy animacji: " + animationDelay.getValueStr() + " ms"
                 font.pixelSize: 20
             }
 
@@ -85,6 +85,16 @@ Page {
                 stepSize: 100
                 to: 3000
                 value: 1000
+
+                property bool isInfinite: value == to
+
+                function getValueStr() {
+                    if (isInfinite) {
+                        return "∞";
+                    } else {
+                        return value.toString();
+                    }
+                }
             }
 
             RowLayout{
@@ -111,8 +121,8 @@ Page {
                 onClicked:{
 
                     if(hammingData.text.length > 0){
-                        hammingCode.setInitialData(hammingData.text, additionalBit.checked, animationDelay.value);
-                        stackView.push("Hamming.qml");
+                        hammingCode.setInitialData(hammingData.text, additionalBit.checked, animationDelay.value, animationDelay.isInfinite);
+                        stackView.push("HammingGenerationMatrix.qml");
                     }
 
                     else{

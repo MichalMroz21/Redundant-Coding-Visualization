@@ -12,6 +12,7 @@ RowLayout{
     property bool clickChange : false
 
     property bool isExtended
+    property bool showSymbols : true
 
     property int changeLimit : 1 + isExtended
     property int currentChanged : 0
@@ -30,6 +31,15 @@ RowLayout{
                 anchors.centerIn: parent
                 text: " "
                 color: "black"
+            }
+
+            Text {
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.top: parent.top
+                anchors.topMargin: -25
+                text: hammingCode.getSymbol(index)
+                color: "black"
+                visible: showSymbols
             }
 
             border.width: 1
@@ -66,6 +76,11 @@ RowLayout{
             }
         }
     }
+
+    Connections{
+        target: hammingCode
+    }
+
 }
 
 
