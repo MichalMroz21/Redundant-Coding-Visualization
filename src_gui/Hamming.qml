@@ -246,11 +246,8 @@ Page {
         }
 
         function onEndErrorCorrection(C) {
-            if (C === 0) mainMenuButton.visible = true;
-            else {
-                nextStepButton.goToSyndrome = true;
-                nextStepButton.visible = true;
-            }
+            nextStepButton.goToSyndrome = true;
+            nextStepButton.visible = true;
         }
 
         function onInsertArray(index, str, showSymbols){

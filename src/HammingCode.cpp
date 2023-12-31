@@ -145,31 +145,32 @@ int HammingCode::correctErrorExtended(bool forQML)
     }
 
     emit setBelowTextExtended(QString(""));
+    emit setBelowText(QString("C = %1, P = %2").arg(C).arg(P));
     this->setError(C);
     int ret;
     if(C == 0){ //theory from youtube
         if(P == 1){
             qInfo() << "Error occured in extended parity bit, correcting";
-            emit setBelowText("Error is in extended parity bit (0)");
+            emit setBelowTextExtended("Error is in extended parity bit (0)");
 //            receivedCode[C] = !receivedCode[C];
             ret = C;
         }
         else{
             qInfo() << "No error";
-            emit setBelowText("There is no error!");
+            emit setBelowTextExtended("There is no error!");
             ret = -1;
         }
     }
     else{
         if(P == 1){
             qInfo() << "Single error occured at " + QString::number(C) + " correcting...";
-            emit setBelowText("Error is at index: " + QString::number(C));
+            emit setBelowTextExtended("Error is at index: " + QString::number(C));
 //            receivedCode[C] = !receivedCode[C];
             ret = C;
         }
         else{
             qInfo() << "Double error occured that cannot be corrected";
-            emit setBelowText("There is a double error, but it can't be calculated where");
+            emit setBelowTextExtended("There is a double error, but it can't be calculated where");
             ret = -2;
         }
     }
@@ -249,15 +250,15 @@ int HammingCode::correctErrorStandard(bool forQML)
 
     this->setError(C);
     int ret;
+    emit setBelowText("C = " + QString::number(C));
     if(C == 0){ //theory from youtube
         qInfo() << "No error!";
-        emit setBelowText("No error found!");
+        emit setBelowTextExtended("No error found!");
         ret = -1;
     }
     else{
         qInfo() << "Error at position: " << (C - 1);
-        emit setBelowText("Error is at position: " + QString::number(C - 1));
-
+        emit setBelowTextExtended("Error is at position: " + QString::number(C));
 //        receivedCode[C - 1] = !receivedCode[C - 1];
         ret = C - 1;
     }
@@ -486,7 +487,6 @@ void HammingCode::encodeDataAsync(bool forQML){
 
     else data = dataEncoded; //just copy the rest without extending the bit
 
-    this->setEncodedStr(dataEncoded);
     if(forQML) emit encodingEnd();
 }
 
@@ -579,7 +579,7 @@ QString HammingCode::getGenerationMatrixStr()
             bool bitUsedInCurrentPosition = false;
             bool isParity = isPowerTwo(j + 1);
             if(!isParity) {
-                bitUsedInCurrentPosition = n-- == 0; // bit used at n-th non-parity position
+                bitUsedInCurrentPosition = ((n--) == 0); // bit used at n-th non-parity position
                 ret.append(QChar(bitUsedInCurrentPosition ? '1' : '0'));
             } else {
                 bitUsedInCurrentPosition = (1 << parityBitCounter) & position;
@@ -631,18 +631,24 @@ QString HammingCode::getErrorMatrixStr() {
     return ret;
 }
 
-void HammingCode::setEncodedStr(QBitArray encoded)
-{
-    this->encodedString = {};
-    for(int i = 0; i < encoded.size(); i++){
-        this->encodedString.append(QChar(encoded[i] + '0'));
-    }
-
-}
-
 
 QString HammingCode::getEncodedStr() {
-    return this->encodedString;
+    QString ret{};
+    QString error = getError();
+    QString received = getReceivedCode();
+
+    // Perform XOR operation character by character
+    for (int i = 0; i < error.length(); ++i) {
+        // Convert characters to integers and perform XOR
+        int errorBit = error.at(i).digitValue();
+        int receivedBit = received.at(i).digitValue();
+        int xorResult = errorBit ^ receivedBit;
+
+        ret.append(QString::number(xorResult));
+    }
+
+    return ret;
+
 }
 
 QString HammingCode::getError() {
@@ -676,4 +682,15 @@ void HammingCode::setSymbols() {
         else symbol = QString("d%1").arg(dataIndex++);
         this->symbols << symbol;
     }
+}
+
+QString HammingCode::getDecodedStr() {
+    QString ret {};
+    QString encoded = getEncodedStr();
+    for (int i = 0; i < this->m + this->p; i++) {
+        if (isPowerTwo(i + 1)) continue;
+        ret.append(encoded.at(i));
+    }
+    return ret;
+
 }
