@@ -633,6 +633,7 @@ QString HammingCode::getErrorMatrixStr() {
 
 void HammingCode::setEncodedStr(QBitArray encoded)
 {
+    this->encodedString = {};
     for(int i = 0; i < encoded.size(); i++){
         this->encodedString.append(QChar(encoded[i] + '0'));
     }
@@ -654,6 +655,7 @@ QString HammingCode::getSyndrome() {
 
 void HammingCode::setError(int C)
 {
+    this->error = {};
     this->syndrome = QString::number(C, 2); // converts to binary
     for (int i = 0; i < this->m + this->p; i++) {
         this->error.append(QChar(i == C - 1 ? '1' : '0'));
@@ -665,6 +667,7 @@ QString HammingCode::getSymbol(int index) {
 }
 
 void HammingCode::setSymbols() {
+    this->symbols = {};
     int parityIndex = 0;
     int dataIndex = 0;
     for (int i = 0; i < this->m + this->p; i++) {
