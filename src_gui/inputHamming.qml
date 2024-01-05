@@ -104,7 +104,8 @@ Page {
                 VisualizeCheckbox{
 
                     Layout.alignment: Qt.AlignRight
-                    text: "<font color=\"black\">Dodatkowy bit parity</font>" //yup, the only way to change a color
+                    //text: "<font color=\"black\">Dodatkowy bit parity</font>" //yup, the only way to change a color
+                    text: "<font color=\"black\">Dodatkowy bit parzystości</font>" //yup, the only way to change a color
                     id: additionalBit
                 }
             }

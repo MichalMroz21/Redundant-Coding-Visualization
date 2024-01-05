@@ -92,7 +92,8 @@ Page {
         Button {
             Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
 
-            text: qsTr("Main Menu")
+            //text: qsTr("Main Menu")
+            text: qsTr("Menu główne")
 
             onClicked: {
                 stackView.clear();

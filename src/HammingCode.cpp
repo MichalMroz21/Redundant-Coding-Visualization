@@ -150,27 +150,39 @@ int HammingCode::correctErrorExtended(bool forQML)
     int ret;
     if(C == 0){ //theory from youtube
         if(P == 1){
-            qInfo() << "Error occured in extended parity bit, correcting";
-            emit setBelowTextExtended("Error is in extended parity bit (0)");
+            //qInfo() << "Error occured in extended parity bit, correcting";
+            //emit setBelowTextExtended("Error is in extended parity bit (0)");
+
+            qInfo() << "Błąd wystąpił w rozszerzonym bicie parzystości, poprawianie";
+            emit setBelowTextExtended("Błąd występuje w rozszerzonym bicie parzystości (0)");
 //            receivedCode[C] = !receivedCode[C];
             ret = C;
         }
         else{
-            qInfo() << "No error";
-            emit setBelowTextExtended("There is no error!");
+            //qInfo() << "No error";
+            //emit setBelowTextExtended("There is no error!");
+
+            qInfo() << "Brak błędów";
+            emit setBelowTextExtended("Nie ma błędów!");
             ret = -1;
         }
     }
     else{
         if(P == 1){
-            qInfo() << "Single error occured at " + QString::number(C) + " correcting...";
-            emit setBelowTextExtended("Error is at index: " + QString::number(C));
+            //qInfo() << "Single error occured at " + QString::number(C) + " correcting...";
+            //emit setBelowTextExtended("Error is at index: " + QString::number(C));
+
+            qInfo() << "Pojedynczy błąd wystąpił w " + QString::number(C) + ", poprawianie...";
+            emit setBelowTextExtended("Błąd znajduje się pod indekksem: " + QString::number(C));
 //            receivedCode[C] = !receivedCode[C];
             ret = C;
         }
         else{
-            qInfo() << "Double error occured that cannot be corrected";
-            emit setBelowTextExtended("There is a double error, but it can't be calculated where");
+            //qInfo() << "Double error occured that cannot be corrected";
+            //emit setBelowTextExtended("There is a double error, but it can't be calculated where");
+
+            qInfo() << "Wystąpił podwójny błąd, który nie może być poprawiony";
+            emit setBelowTextExtended("Występuje podwójny błąd, który nie może zosstać wyliczony, gdzie występuje");
             ret = -2;
         }
     }
@@ -252,13 +264,19 @@ int HammingCode::correctErrorStandard(bool forQML)
     int ret;
     emit setBelowText("C = " + QString::number(C));
     if(C == 0){ //theory from youtube
-        qInfo() << "No error!";
-        emit setBelowTextExtended("No error found!");
+        //qInfo() << "No error!";
+        //emit setBelowTextExtended("No error found!");
+
+        qInfo() << "Brak błędów!";
+        emit setBelowTextExtended("Nie znaleziono błędóww!");
         ret = -1;
     }
     else{
-        qInfo() << "Error at position: " << (C - 1);
-        emit setBelowTextExtended("Error is at position: " + QString::number(C));
+        //qInfo() << "Error at position: " << (C - 1);
+        //emit setBelowTextExtended("Error is at position: " + QString::number(C));
+
+        qInfo() << "Błąd na pozycji: " << (C - 1);
+        emit setBelowTextExtended("Błąd znajduje się na pozycji: " + QString::number(C));
 //        receivedCode[C - 1] = !receivedCode[C - 1];
         ret = C - 1;
     }
@@ -376,8 +394,9 @@ void HammingCode::encodeDataAsync(bool forQML){
     for(int i = 1; i <= n; i *= 2){ //calculating parity bits
 
         int xorVal = 0; //counting number of 1's for each parity bit, xor just signals even/odd count
+        //QString belowText{}, initialText{"<font color=\"Blue\">Parity Bit " + QString::number(qLn(i)/qLn(2.0)) + " =</font> %1"}, belowTextExt{};
 
-        QString belowText{}, initialText{"<font color=\"Blue\">Parity Bit " + QString::number(qLn(i)/qLn(2.0)) + " =</font> %1"}, belowTextExt{};
+        QString belowText{}, initialText{"<font color=\"Blue\">Bit parzystości " + QString::number(qLn(i)/qLn(2.0)) + " =</font> %1"}, belowTextExt{};
         if(forQML){
             belowText = QString(initialText).arg(dataEncoded[i - 1]);
             belowTextExt = QString("%1 = %1").arg(this->getSymbol(i - 1));
@@ -433,8 +452,9 @@ void HammingCode::encodeDataAsync(bool forQML){
         this->p++; //increase parity count if extended
 
         data = QBitArray(n + 1);
+        //QString belowText{}, initialText{"<font color=\"purple\">Additional Parity Bit =</font> %1"}, belowTextExt{"p = p"};
 
-        QString belowText{}, initialText{"<font color=\"purple\">Additional Parity Bit =</font> %1"}, belowTextExt{"p = p"};
+        QString belowText{}, initialText{"<font color=\"purple\">Dodatkowy bit parzystości =</font> %1"}, belowTextExt{"p = p"};
         this->symbols.prepend(QString("p"));
 
         int xorVal{};

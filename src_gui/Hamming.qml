@@ -357,7 +357,8 @@ Page {
         }
 
         Component.onCompleted: {
-            stageText.text = "Encoding...";
+            //stageText.text = "Encoding...";
+            stageText.text = "Odkodowywanie...";
             hammingCode.encodeData(true);
         }
 
@@ -375,7 +376,8 @@ Page {
 
             onSetClickAllow(0, false);
 
-            stageText.text = "Finding error(s)...";
+            //stageText.text = "Finding error(s)...";
+            stageText.text = "Znajdowanie błędu/ów...";
             stageTextExt.visible = false;
             visualiseButton.visible = false;
 
