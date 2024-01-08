@@ -145,36 +145,52 @@ int HammingCode::correctErrorExtended(bool forQML)
     }
 
     emit setBelowTextExtended(QString(""));
-    this->setError(C);
+    emit setBelowText(QString("C = %1, P = %2").arg(C).arg(P));
+
     int ret;
     if(C == 0){ //theory from youtube
         if(P == 1){
-            qInfo() << "Error occured in extended parity bit, correcting";
-            emit setBelowText("Error is in extended parity bit (0)");
+            //qInfo() << "Error occured in extended parity bit, correcting";
+            //emit setBelowTextExtended("Error is in extended parity bit (0)");
+
+            qInfo() << "Błąd wystąpił w rozszerzonym bicie parzystości, poprawianie";
+            emit setBelowTextExtended("Błąd występuje w rozszerzonym bicie parzystości (0)");
 //            receivedCode[C] = !receivedCode[C];
             ret = C;
+            this->setError(1);
         }
         else{
-            qInfo() << "No error";
-            emit setBelowText("There is no error!");
+            //qInfo() << "No error";
+            //emit setBelowTextExtended("There is no error!");
+
+            qInfo() << "Brak błędów";
+            emit setBelowTextExtended("Nie ma błędów!");
             ret = -1;
+            this->setError(0);
         }
     }
     else{
         if(P == 1){
-            qInfo() << "Single error occured at " + QString::number(C) + " correcting...";
-            emit setBelowText("Error is at index: " + QString::number(C));
+            //qInfo() << "Single error occured at " + QString::number(C) + " correcting...";
+            //emit setBelowTextExtended("Error is at index: " + QString::number(C));
+
+            qInfo() << "Pojedynczy błąd wystąpił w " + QString::number(C) + ", poprawianie...";
+            emit setBelowTextExtended("Błąd znajduje się na pozycji: " + QString::number(C + 1));
 //            receivedCode[C] = !receivedCode[C];
             ret = C;
+            this->setError(C + 1);
         }
         else{
-            qInfo() << "Double error occured that cannot be corrected";
-            emit setBelowText("There is a double error, but it can't be calculated where");
+            //qInfo() << "Double error occured that cannot be corrected";
+            //emit setBelowTextExtended("There is a double error, but it can't be calculated where");
+
+            qInfo() << "Wystąpił podwójny błąd, który nie może być poprawiony";
+            emit setBelowTextExtended("Występuje podwójny błąd, który nie może zostać wyliczony, gdzie występuje");
             ret = -2;
         }
     }
 
-    if(forQML) emit endErrorCorrection(C);
+    if(forQML) emit endErrorCorrection(C, P);
     return ret;
 }
 
@@ -249,20 +265,26 @@ int HammingCode::correctErrorStandard(bool forQML)
 
     this->setError(C);
     int ret;
+    emit setBelowText("C = " + QString::number(C));
     if(C == 0){ //theory from youtube
-        qInfo() << "No error!";
-        emit setBelowText("No error found!");
+        //qInfo() << "No error!";
+        //emit setBelowTextExtended("No error found!");
+
+        qInfo() << "Brak błędów!";
+        emit setBelowTextExtended("Nie znaleziono błędóww!");
         ret = -1;
     }
     else{
-        qInfo() << "Error at position: " << (C - 1);
-        emit setBelowText("Error is at position: " + QString::number(C - 1));
+        //qInfo() << "Error at position: " << (C - 1);
+        //emit setBelowTextExtended("Error is at position: " + QString::number(C));
 
+        qInfo() << "Błąd na pozycji: " << (C - 1);
+        emit setBelowTextExtended("Błąd znajduje się na pozycji: " + QString::number(C));
 //        receivedCode[C - 1] = !receivedCode[C - 1];
         ret = C - 1;
     }
 
-    if(forQML) emit endErrorCorrection(C);
+    if(forQML) emit endErrorCorrection(C, -1);
     return ret;
 }
 
@@ -375,8 +397,9 @@ void HammingCode::encodeDataAsync(bool forQML){
     for(int i = 1; i <= n; i *= 2){ //calculating parity bits
 
         int xorVal = 0; //counting number of 1's for each parity bit, xor just signals even/odd count
+        //QString belowText{}, initialText{"<font color=\"Blue\">Parity Bit " + QString::number(qLn(i)/qLn(2.0)) + " =</font> %1"}, belowTextExt{};
 
-        QString belowText{}, initialText{"<font color=\"Blue\">Parity Bit " + QString::number(qLn(i)/qLn(2.0)) + " =</font> %1"}, belowTextExt{};
+        QString belowText{}, initialText{"<font color=\"Blue\">Bit parzystości " + QString::number(qLn(i)/qLn(2.0)) + " =</font> %1"}, belowTextExt{};
         if(forQML){
             belowText = QString(initialText).arg(dataEncoded[i - 1]);
             belowTextExt = QString("%1 = %1").arg(this->getSymbol(i - 1));
@@ -432,8 +455,9 @@ void HammingCode::encodeDataAsync(bool forQML){
         this->p++; //increase parity count if extended
 
         data = QBitArray(n + 1);
+        //QString belowText{}, initialText{"<font color=\"purple\">Additional Parity Bit =</font> %1"}, belowTextExt{"p = p"};
 
-        QString belowText{}, initialText{"<font color=\"purple\">Additional Parity Bit =</font> %1"}, belowTextExt{"p = p"};
+        QString belowText{}, initialText{"<font color=\"purple\">Dodatkowy bit parzystości =</font> %1"}, belowTextExt{"p = p"};
         this->symbols.prepend(QString("p"));
 
         int xorVal{};
@@ -486,7 +510,6 @@ void HammingCode::encodeDataAsync(bool forQML){
 
     else data = dataEncoded; //just copy the rest without extending the bit
 
-    this->setEncodedStr(dataEncoded);
     if(forQML) emit encodingEnd();
 }
 
@@ -579,7 +602,7 @@ QString HammingCode::getGenerationMatrixStr()
             bool bitUsedInCurrentPosition = false;
             bool isParity = isPowerTwo(j + 1);
             if(!isParity) {
-                bitUsedInCurrentPosition = n-- == 0; // bit used at n-th non-parity position
+                bitUsedInCurrentPosition = ((n--) == 0); // bit used at n-th non-parity position
                 ret.append(QChar(bitUsedInCurrentPosition ? '1' : '0'));
             } else {
                 bitUsedInCurrentPosition = (1 << parityBitCounter) & position;
@@ -631,17 +654,24 @@ QString HammingCode::getErrorMatrixStr() {
     return ret;
 }
 
-void HammingCode::setEncodedStr(QBitArray encoded)
-{
-    for(int i = 0; i < encoded.size(); i++){
-        this->encodedString.append(QChar(encoded[i] + '0'));
-    }
-
-}
-
 
 QString HammingCode::getEncodedStr() {
-    return this->encodedString;
+    QString ret{};
+    QString error = getError();
+    QString received = getReceivedCode();
+
+    // Perform XOR operation character by character
+    for (int i = 0; i < error.length(); ++i) {
+        // Convert characters to integers and perform XOR
+        int errorBit = error.at(i).digitValue();
+        int receivedBit = received.at(i).digitValue();
+        int xorResult = errorBit ^ receivedBit;
+
+        ret.append(QString::number(xorResult));
+    }
+
+    return ret;
+
 }
 
 QString HammingCode::getError() {
@@ -654,10 +684,13 @@ QString HammingCode::getSyndrome() {
 
 void HammingCode::setError(int C)
 {
-    this->syndrome = QString::number(C, 2); // converts to binary
+    this->error = {};
+    int syndromeLength = qCeil(qLn(this->m + this->p) / qLn(2));
+    this->syndrome = QString::number(C, 2).rightJustified(syndromeLength, '0'); // converts to binary, left padded with 0s
     for (int i = 0; i < this->m + this->p; i++) {
         this->error.append(QChar(i == C - 1 ? '1' : '0'));
     }
+
 }
 
 QString HammingCode::getSymbol(int index) {
@@ -665,6 +698,7 @@ QString HammingCode::getSymbol(int index) {
 }
 
 void HammingCode::setSymbols() {
+    this->symbols = {};
     int parityIndex = 0;
     int dataIndex = 0;
     for (int i = 0; i < this->m + this->p; i++) {
@@ -673,4 +707,15 @@ void HammingCode::setSymbols() {
         else symbol = QString("d%1").arg(dataIndex++);
         this->symbols << symbol;
     }
+}
+
+QString HammingCode::getDecodedStr() {
+    QString ret {};
+    QString encoded = getEncodedStr();
+    for (int i = this->encodingExtended ? 1 : 0; i < this->m + this->p; i++) {
+        if (isPowerTwo(this->encodingExtended ? i : i + 1)) continue;
+        ret.append(encoded.at(i));
+    }
+    return ret;
+
 }
