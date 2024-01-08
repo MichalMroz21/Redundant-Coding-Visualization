@@ -119,13 +119,13 @@ Page {
             component.createObject(errorColumn, {myArr: error, isExtended: hammingCode.getEncodingExtended()});
 
             let encoded = hammingCode.getEncodedStr();
-            component.createObject(encodedColumn, {myArr: encoded, isExtended: hammingCode.getEncodingExtended()});
+            component.createObject(encodedColumn, {myArr: encoded, isExtended: hammingCode.getEncodingExtended(), showSymbols: true});
 
             let received = hammingCode.getReceivedCode();
             component.createObject(receivedColumn, {myArr: received, isExtended: hammingCode.getEncodingExtended()});
 
             let decoded = hammingCode.getDecodedStr();
-            component.createObject(endColumn, {myArr: decoded, isExtended: hammingCode.getEncodingExtended()});
+            component.createObject(endColumn, {myArr: decoded, isExtended: hammingCode.getEncodingExtended(), showSymbols: true, simpleSymbols: true});
         }
 
     }

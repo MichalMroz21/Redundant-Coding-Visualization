@@ -82,7 +82,7 @@ signals:
     void setClickAllow(int arrIndex, bool isAllowed);
 
     void encodingEnd();
-    void endErrorCorrection(int C);
+    void endErrorCorrection(int C, int P);
 
 private:
 

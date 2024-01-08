@@ -146,7 +146,7 @@ int HammingCode::correctErrorExtended(bool forQML)
 
     emit setBelowTextExtended(QString(""));
     emit setBelowText(QString("C = %1, P = %2").arg(C).arg(P));
-    this->setError(C);
+
     int ret;
     if(C == 0){ //theory from youtube
         if(P == 1){
@@ -157,6 +157,7 @@ int HammingCode::correctErrorExtended(bool forQML)
             emit setBelowTextExtended("Błąd występuje w rozszerzonym bicie parzystości (0)");
 //            receivedCode[C] = !receivedCode[C];
             ret = C;
+            this->setError(1);
         }
         else{
             //qInfo() << "No error";
@@ -165,6 +166,7 @@ int HammingCode::correctErrorExtended(bool forQML)
             qInfo() << "Brak błędów";
             emit setBelowTextExtended("Nie ma błędów!");
             ret = -1;
+            this->setError(0);
         }
     }
     else{
@@ -173,21 +175,22 @@ int HammingCode::correctErrorExtended(bool forQML)
             //emit setBelowTextExtended("Error is at index: " + QString::number(C));
 
             qInfo() << "Pojedynczy błąd wystąpił w " + QString::number(C) + ", poprawianie...";
-            emit setBelowTextExtended("Błąd znajduje się pod indekksem: " + QString::number(C));
+            emit setBelowTextExtended("Błąd znajduje się na pozycji: " + QString::number(C + 1));
 //            receivedCode[C] = !receivedCode[C];
             ret = C;
+            this->setError(C + 1);
         }
         else{
             //qInfo() << "Double error occured that cannot be corrected";
             //emit setBelowTextExtended("There is a double error, but it can't be calculated where");
 
             qInfo() << "Wystąpił podwójny błąd, który nie może być poprawiony";
-            emit setBelowTextExtended("Występuje podwójny błąd, który nie może zosstać wyliczony, gdzie występuje");
+            emit setBelowTextExtended("Występuje podwójny błąd, który nie może zostać wyliczony, gdzie występuje");
             ret = -2;
         }
     }
 
-    if(forQML) emit endErrorCorrection(C);
+    if(forQML) emit endErrorCorrection(C, P);
     return ret;
 }
 
@@ -281,7 +284,7 @@ int HammingCode::correctErrorStandard(bool forQML)
         ret = C - 1;
     }
 
-    if(forQML) emit endErrorCorrection(C);
+    if(forQML) emit endErrorCorrection(C, -1);
     return ret;
 }
 
@@ -682,10 +685,12 @@ QString HammingCode::getSyndrome() {
 void HammingCode::setError(int C)
 {
     this->error = {};
-    this->syndrome = QString::number(C, 2); // converts to binary
+    int syndromeLength = qCeil(qLn(this->m + this->p) / qLn(2));
+    this->syndrome = QString::number(C, 2).rightJustified(syndromeLength, '0'); // converts to binary, left padded with 0s
     for (int i = 0; i < this->m + this->p; i++) {
         this->error.append(QChar(i == C - 1 ? '1' : '0'));
     }
+
 }
 
 QString HammingCode::getSymbol(int index) {
@@ -707,8 +712,8 @@ void HammingCode::setSymbols() {
 QString HammingCode::getDecodedStr() {
     QString ret {};
     QString encoded = getEncodedStr();
-    for (int i = 0; i < this->m + this->p; i++) {
-        if (isPowerTwo(i + 1)) continue;
+    for (int i = this->encodingExtended ? 1 : 0; i < this->m + this->p; i++) {
+        if (isPowerTwo(this->encodingExtended ? i : i + 1)) continue;
         ret.append(encoded.at(i));
     }
     return ret;

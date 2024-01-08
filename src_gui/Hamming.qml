@@ -162,7 +162,7 @@ Page {
             id: mainMenuButton
             Layout.alignment: Qt.AlignHCenter
 
-            text: qsTr("Main Menu")
+            text: qsTr("Menu Główne")
 
             Layout.margins: root.height / 20
 
@@ -245,9 +245,14 @@ Page {
             emptyarrayRowLayoutRowColumn.visible = true;
         }
 
-        function onEndErrorCorrection(C) {
-            nextStepButton.goToSyndrome = true;
-            nextStepButton.visible = true;
+        function onEndErrorCorrection(C, P) {
+            if (C !== 0 && P === 0) {
+                nextStepButton.visible = false;
+                mainMenuButton.visible = true;
+            } else {
+                nextStepButton.goToSyndrome = true;
+                nextStepButton.visible = true;
+            }
         }
 
         function onInsertArray(index, str, showSymbols){
