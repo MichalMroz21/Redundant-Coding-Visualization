@@ -45,6 +45,8 @@ public slots:
     QString getEncodedStr();
     QString getReceivedCode();
     QString getSymbol(int index);
+    QString getDecodedStr();
+
 
     int getAnimationDelayMs() const;
     bool getEncodingExtended() const;
@@ -80,7 +82,7 @@ signals:
     void setClickAllow(int arrIndex, bool isAllowed);
 
     void encodingEnd();
-    void endErrorCorrection(int C);
+    void endErrorCorrection(int C, int P);
 
 private:
 
@@ -90,7 +92,6 @@ private:
     QString encodedString{}, error{}, syndrome{};
     QVector<QString> symbols;
 
-    void setEncodedStr(QBitArray encoded);
     void setError(int C);
     void waitForQml();
     void setSymbols();

@@ -13,6 +13,7 @@ RowLayout{
 
     property bool isExtended
     property bool showSymbols : false
+    property bool simpleSymbols : false;
 
     property int changeLimit : 1 + isExtended
     property int currentChanged : 0
@@ -37,7 +38,7 @@ RowLayout{
                 anchors.horizontalCenter: parent.horizontalCenter
                 anchors.top: parent.top
                 anchors.topMargin: -25
-                text: !showSymbols ? "" : hammingCode.getSymbol(index)
+                text: !showSymbols ? "" : simpleSymbols ? "d" + (index).toString() : hammingCode.getSymbol(index)
                 color: "black"
                 visible: showSymbols
             }

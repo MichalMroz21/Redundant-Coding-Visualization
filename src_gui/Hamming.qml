@@ -162,7 +162,7 @@ Page {
             id: mainMenuButton
             Layout.alignment: Qt.AlignHCenter
 
-            text: qsTr("Main Menu")
+            text: qsTr("Menu Główne")
 
             Layout.margins: root.height / 20
 
@@ -245,9 +245,11 @@ Page {
             emptyarrayRowLayoutRowColumn.visible = true;
         }
 
-        function onEndErrorCorrection(C) {
-            if (C === 0) mainMenuButton.visible = true;
-            else {
+        function onEndErrorCorrection(C, P) {
+            if (C !== 0 && P === 0) {
+                nextStepButton.visible = false;
+                mainMenuButton.visible = true;
+            } else {
                 nextStepButton.goToSyndrome = true;
                 nextStepButton.visible = true;
             }
@@ -360,7 +362,8 @@ Page {
         }
 
         Component.onCompleted: {
-            stageText.text = "Encoding...";
+            //stageText.text = "Encoding...";
+            stageText.text = "Odkodowywanie...";
             hammingCode.encodeData(true);
         }
 
@@ -378,7 +381,8 @@ Page {
 
             onSetClickAllow(0, false);
 
-            stageText.text = "Finding error(s)...";
+            //stageText.text = "Finding error(s)...";
+            stageText.text = "Znajdowanie błędu/ów...";
             stageTextExt.visible = false;
             visualiseButton.visible = false;
 

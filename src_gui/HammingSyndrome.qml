@@ -30,7 +30,33 @@ Page {
             font.pixelSize: 20
             color: "black"
             Layout.alignment: Qt.AlignHCenter
-            text: qsTr("Syndrom błędu: %1\nWektor błędu").arg(hammingCode.getSyndrome())
+            text: qsTr("Otrzymana wiadomość")
+        }
+
+        Column {
+            id: receivedColumn
+            Layout.alignment: Qt.AlignHCenter
+
+        }
+
+        Text {
+            font.pixelSize: 20
+            color: "black"
+            Layout.alignment: Qt.AlignHCenter
+            text: qsTr("Syndrom błędu")
+        }
+
+        Column {
+            id: syndromColumn
+            Layout.alignment: Qt.AlignHCenter
+
+        }
+
+        Text{
+            font.pixelSize: 20
+            color: "black"
+            Layout.alignment: Qt.AlignHCenter
+            text: qsTr("Wektor błędów")
         }
 
         Column {
@@ -43,32 +69,31 @@ Page {
             font.pixelSize: 20
             color: "black"
             Layout.alignment: Qt.AlignHCenter
-            text: qsTr("Zakodowana wiadomość")
+            text: qsTr("Uzyskana wiadomość; Otrzymana wiadomość XOR Wektor błędów")
         }
 
         Column {
             id: encodedColumn
             Layout.alignment: Qt.AlignHCenter
-
         }
 
         Text{
             font.pixelSize: 20
             color: "black"
             Layout.alignment: Qt.AlignHCenter
-            text: qsTr("Otrzymana wiadomość")
+            text: qsTr("Odkodowana wiadomość")
         }
 
         Column {
-            id: receivedColumn
+            id: endColumn
             Layout.alignment: Qt.AlignHCenter
-
         }
 
         Button {
             Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
 
-            text: qsTr("Main Menu")
+            //text: qsTr("Main Menu")
+            text: qsTr("Menu główne")
 
             onClicked: {
                 stackView.clear();
@@ -86,14 +111,21 @@ Page {
         Component.onCompleted: {
             let component = Qt.createComponent("VisualizeComponents/ArrayRowLayout.qml");
 
+            let syndrom = hammingCode.getSyndrome();
+            component.createObject(syndromColumn, {myArr: syndrom, isExtended: hammingCode.getEncodingExtended()});
+
+
             let error = hammingCode.getError();
             component.createObject(errorColumn, {myArr: error, isExtended: hammingCode.getEncodingExtended()});
 
             let encoded = hammingCode.getEncodedStr();
-            component.createObject(encodedColumn, {myArr: encoded, isExtended: hammingCode.getEncodingExtended()})
+            component.createObject(encodedColumn, {myArr: encoded, isExtended: hammingCode.getEncodingExtended(), showSymbols: true});
 
             let received = hammingCode.getReceivedCode();
-            component.createObject(receivedColumn, {myArr: received, isExtended: hammingCode.getEncodingExtended()})
+            component.createObject(receivedColumn, {myArr: received, isExtended: hammingCode.getEncodingExtended()});
+
+            let decoded = hammingCode.getDecodedStr();
+            component.createObject(endColumn, {myArr: decoded, isExtended: hammingCode.getEncodingExtended(), showSymbols: true, simpleSymbols: true});
         }
 
     }
