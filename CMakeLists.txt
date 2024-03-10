@@ -20,7 +20,8 @@ project(RedundantCoding VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(GTest REQUIRED)
+include(cmake/UpdateSubmodules.cmake)
+add_subdirectory(lib)
 find_package(Qt6 6.4 REQUIRED COMPONENTS Quick Concurrent)
 
 qt_standard_project_setup()
@@ -58,10 +59,11 @@ set_target_properties(appRedundantCoding PROPERTIES
     WIN32_EXECUTABLE TRUE
 )
 
+include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 target_link_libraries(appRedundantCoding
     PRIVATE Qt6::Quick
     PRIVATE Qt${QT_VERSION_MAJOR}::Concurrent
-    PRIVATE ${GTEST_LIBRARIES}
+    PRIVATE GTest::gtest
 )
 
 install(TARGETS appRedundantCoding
