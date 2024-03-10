@@ -21,7 +21,7 @@ project(RedundantCoding VERSION 0.1 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include(cmake/UpdateSubmodules.cmake)
-add_subdirectory(external)
+add_subdirectory(lib)
 find_package(Qt6 6.4 REQUIRED COMPONENTS Quick Concurrent)
 
 qt_standard_project_setup()
