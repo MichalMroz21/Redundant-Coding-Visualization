@@ -11,6 +11,10 @@ target_sources(Tester PRIVATE
 
 target_include_directories(Tester PUBLIC ${INCLUDE_DIR})
 
+if(${Boost_FOUND})
+    target_include_directories(Tester PRIVATE ${Boost_INCLUDE_DIRS})
+endif()
+
 target_link_libraries(Tester PRIVATE ${GTEST_LINK} ${BOOST_LIBRARIES} ${QT_LIBRARIES})
 
 include(GoogleTest)

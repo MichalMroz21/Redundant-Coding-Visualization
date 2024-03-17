@@ -12,7 +12,8 @@ set(SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/source)
 
 #Some libraries are header-only and some require building, this separation is required as boost is added both with find_package and submodules
 #As described here: https://www.boost.org/doc/libs/1_84_0/more/getting_started/windows.html#header-only-libraries
-set(BOOST_HEADER_ONLY_LIBRARIES algorithm)
+#The name has to be BOOST_INCLUDE_LIBRARIES!
+set(BOOST_BOOST_INCLUDE_LIBRARIES algorithm)
 set(BOOST_BUILD_LIBRARIES filesystem)
 set(BOOST_ENABLE_CMAKE ON)
 
@@ -55,14 +56,18 @@ target_include_directories(appRedundantCoding PRIVATE
     ${INCLUDE_DIR}
 )
 
+if(${Boost_FOUND})
+    target_include_directories(appRedundantCoding PRIVATE ${Boost_INCLUDE_DIRS})
+endif()
+
 #Transform library names into proper form for linking
 list(TRANSFORM BOOST_BUILD_LIBRARIES PREPEND "Boost::")
-list(TRANSFORM BOOST_HEADER_ONLY_LIBRARIES PREPEND "Boost::")
+list(TRANSFORM BOOST_INCLUDE_LIBRARIES PREPEND "Boost::")
 list(TRANSFORM QT_LIBRARIES PREPEND "Qt6::")
 
 #Combine 2 lists into one
 list(APPEND BOOST_LIBRARIES ${BOOST_BUILD_LIBRARIES})
-list(APPEND BOOST_LIBRARIES ${BOOST_HEADER_ONLY_LIBRARIES})
+list(APPEND BOOST_LIBRARIES ${BOOST_INCLUDE_LIBRARIES})
 
 #Link to main application
 target_link_libraries(appRedundantCoding
