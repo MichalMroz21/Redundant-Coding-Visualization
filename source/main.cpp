@@ -7,9 +7,6 @@
 #include "DebugInterceptor.hpp"
 #include "HammingCode.hpp"
 
-#include <gtest/gtest.h>
-#include <thread>
-
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
@@ -17,17 +14,8 @@ int main(int argc, char *argv[])
     auto debugInterceptor = DebugInterceptor::getInstance();
     auto hammingCode = QSharedPointer<HammingCode>(new HammingCode());
 
-    testing::InitGoogleTest(&argc, argv);
-
     debugInterceptor.data()->disableDebug();
-
-    bool testsResult = RUN_ALL_TESTS();
-
     debugInterceptor.data()->enableDebug();
-
-    if(testsResult != 0){
-        qWarning() << "Not all tests passed!";
-    }
 
     QQmlApplicationEngine engine;
 
@@ -37,7 +25,7 @@ int main(int argc, char *argv[])
     //adding objects to every .qml
     engine.rootContext()->setContextProperty("hammingCode", hammingCode.data());
 
-    const QUrl url(u"qrc:/RedundantCoding/src_gui/Main.qml"_qs);
+    const QUrl url(u"qrc:/RedundantCoding/source_gui/Main.qml"_qs);
 
     QObject::connect(&engine, &QQmlApplicationEngine::objectCreationFailed,
         &app, []() { QCoreApplication::exit(-1); },

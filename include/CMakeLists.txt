@@ -1,5 +1,4 @@
-file(GLOB FOLDER_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} *.hpp)
-
+#We need to source the include files, so that QT's MOC can see them.
 target_sources(appRedundantCoding PRIVATE
-    ${FOLDER_FILES}
+    ${INCLUDE_FILES}
 )

@@ -1,10 +1,8 @@
 #include "HammingCode.hpp"
 
-#include <climits>
 #include <QtConcurrent>
 #include <QThread>
 #include <QtMath>
-#include <thread>
 
 HammingCode::HammingCode(QObject *parent) : QObject{parent}{}
 
@@ -293,13 +291,13 @@ int HammingCode::correctError(bool forQML)
 {
     if(forQML){
         if(this->encodingExtended){
-            static_cast<void>(QtConcurrent::run([=](){
+            static_cast<void>(QtConcurrent::run([=, this](){
                 correctErrorExtended(forQML);
             }));
         }
 
         else{
-            static_cast<void>(QtConcurrent::run([=](){
+            static_cast<void>(QtConcurrent::run([=, this](){
                 correctErrorStandard(forQML);
             }));
         }
@@ -334,7 +332,7 @@ bool HammingCode::isPowerTwo(int n){
 void HammingCode::encodeData(bool forQML){
 
     if(forQML){
-        static_cast<void>(QtConcurrent::run([=](){
+        static_cast<void>(QtConcurrent::run([=, this](){
             encodeDataAsync(forQML);
         }));
     }
