@@ -23,12 +23,13 @@ Window {
     Row{
 
         ColumnLayout{
-
+            id:menuSidebarColumn
             width: root.width / 4
             height: root.height
 
             ColumnLayout{
 
+                id:menuColumn
                 Layout.alignment: Qt.AlignCenter
                 spacing: 10
 
@@ -100,6 +101,7 @@ Window {
                     fillMode: Image.PreserveAspectFit
 
                     MouseArea{
+                        id:optionsMouseArea
                         anchors.fill: parent
                         hoverEnabled: true
 
@@ -123,23 +125,32 @@ Window {
         }
 
         ColumnLayout{
-
+            id:descriptiveColumn
             height: root.height
             width: root.width / 4 * 3
+            spacing: 0
 
-            Image {
-                id: image
+            Rectangle{
+                id:imageRectangle
 
+                width: parent.width
+                height: parent.height*0.7
                 Layout.alignment: Qt.AlignCenter
-                source: "../assets/Hamming.png"
-                fillMode: Image.PreserveAspectFit
+
+                Image {
+                    id: image
+                    anchors.centerIn: parent
+                    Layout.alignment: Qt.AlignCenter
+                    source: "../assets/Hamming.png"
+                    fillMode: Image.PreserveAspectFit
+                }
             }
 
             Rectangle {
-
+                id:descriptionRectangle
                 Layout.alignment: Qt.AlignCenter
                 width: parent.width
-                height: parent.height
+                height: parent.height*0.3
 
                 Text {
                     id: descriptionText
@@ -189,11 +200,11 @@ Window {
                 break;
             }
             case 1: {
-                imgDescAlgo = ["Opis drugiego", "../assets/Hamming.png", "Drugi"];
+                imgDescAlgo = ["Opis drugiego", "../assets/en.png", "Drugi"];
                 break;
             }
             case 2:{
-                imgDescAlgo = ["Opis trzeciego", "../assets/Hamming.png", "Trzeci"];
+                imgDescAlgo = ["Opis trzeciego", "../assets/pl.png", "Trzeci"];
                 break;
             }
         }
